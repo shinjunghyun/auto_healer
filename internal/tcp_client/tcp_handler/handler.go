@@ -1,6 +1,7 @@
 package tcp_handler
 
 import (
+	"auto_healer/internal/auto"
 	"fmt"
 	"net"
 	"tcp_packet"
@@ -67,6 +68,11 @@ func Dispatcher(conn net.Conn, data []byte) error {
 				packet.CoordX,
 				packet.CoordY,
 				expStr)
+
+			auto.ServerBaramInfoData = auto.ServerBaramInfo{
+				PacketBaramInfo: *packet,
+				LastUpdatedAt:   time.Now(),
+			}
 		}
 
 	default:

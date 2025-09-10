@@ -85,8 +85,8 @@ func CaptureScreen(hwnd uintptr) (image.Image, error) {
 	// Convert the bitmap data to an image.RGBA
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	pix := img.Pix
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
+	for y := range height {
+		for x := range width {
 			i := (y*width + x) * 4
 			j := (y * img.Stride) + (x * 4)
 			pix[j] = bitmapData[i+2]   // R

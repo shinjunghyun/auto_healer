@@ -1,6 +1,10 @@
 package auto
 
-import "sync"
+import (
+	"sync"
+	"tcp_packet"
+	"time"
+)
 
 const (
 	WindowTitle = "MapleStory Worlds-바람의나라 클래식"
@@ -8,4 +12,11 @@ const (
 
 var (
 	mtx sync.Mutex
+
+	ServerBaramInfoData ServerBaramInfo
 )
+
+type ServerBaramInfo struct {
+	tcp_packet.PacketBaramInfo
+	LastUpdatedAt time.Time
+}
