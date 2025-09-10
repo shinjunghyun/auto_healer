@@ -2,17 +2,22 @@ package cmd
 
 import (
 	"auto_healer/configs"
+	"auto_healer/internal/auto/image_helper"
+	"auto_healer/internal/auto/window_helper"
 	"auto_healer/internal/config"
 	"auto_healer/internal/helper"
 	"auto_healer/internal/hooker"
 	"auto_healer/internal/hooker/input_event_handler"
 	"auto_healer/internal/tcp_client/tcp_handler"
+	"image/png"
 	log "logger"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"golang.org/x/sys/windows"
 )
 
 var (
@@ -50,13 +55,65 @@ func AutoHealerStart(gitCommit, buildTime string) {
 	go startTCPClient()
 	go hooker.StartKeyboardHooker(input_event_handler.HandleInputEvent)
 
+	// TODO: DELETE TEST CODE!!
+	testCode()
+	// TODO: END OF TEST CODE!!
+
 	<-make(chan struct{})
+}
+
+func testCode() {
+	user32 := windows.NewLazySystemDLL("user32.dll")
+	isWindowVisible := user32.NewProc("IsWindowVisible")
+
+	// Find the window with the title "PingInfoView"
+	windowName := "MapleStory Worlds-바람의나라 클래식"
+	hwnd, err := window_helper.FindWindow(windowName)
+	if err != nil {
+		log.Error().Msgf("Error finding window: %v\n", err)
+		return
+	}
+
+	if hwnd == 0 {
+		log.Error().Msgf("Window with title '%s' not found.\n", windowName)
+		return
+	}
+
+	// Check if the window is visible
+	visible, _, _ := isWindowVisible.Call(hwnd)
+	if visible == 0 {
+		log.Error().Msgf("Window with title '%s' is not visible.\n", windowName)
+		return
+	}
+
+	// Capture the screen of the found window
+	img, err := image_helper.CaptureScreen(hwnd)
+	if err != nil {
+		log.Error().Msgf("Failed to capture screen: %v\n", err)
+		return
+	}
+
+	// Save the captured image to a file
+	file, err := os.Create("./capture.png")
+	if err != nil {
+		log.Error().Msgf("Failed to create file: %v\n", err)
+		return
+	}
+	defer file.Close()
+
+	err = png.Encode(file, img)
+	if err != nil {
+		log.Error().Msgf("Failed to save image: %v\n", err)
+		return
+	}
+
+	log.Info().Msgf("Screen captured and saved to ./capture.png")
 }
 
 func startTCPClient() {
 	// const host = "192.168.137.65"
 	// const host = "127.0.0.1"
-	const host = "1.241.125.148"
+	const host = "49.172.185.152"
 	const port = "9833"
 
 	address := net.JoinHostPort(host, port)

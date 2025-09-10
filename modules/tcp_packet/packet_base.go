@@ -9,6 +9,7 @@ type PacketType uint16
 
 const (
 	PacketTypePressed PacketType = iota
+	PacketTypeBaramInfo
 )
 
 type PacketBase struct {
@@ -34,6 +35,7 @@ func DeserializePacket(data []byte) (any, error) {
 	dec := gob.NewDecoder(buf)
 
 	gob.Register(&PacketPressed{})
+	gob.Register(&PacketBaramInfo{})
 
 	var decodedData any
 	err := dec.Decode(&decodedData)

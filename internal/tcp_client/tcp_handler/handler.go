@@ -7,6 +7,8 @@ import (
 	"time"
 
 	log "logger"
+
+	"github.com/dustin/go-humanize"
 )
 
 var (
@@ -50,6 +52,21 @@ func Dispatcher(conn net.Conn, data []byte) error {
 	case *tcp_packet.PacketPressed:
 		{
 			log.Info().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
+		}
+
+	case *tcp_packet.PacketBaramInfo:
+		{
+			hpStr := humanize.Comma(int64(packet.HP))
+			mpStr := humanize.Comma(int64(packet.MP))
+			expStr := humanize.Comma(int64(packet.Exp))
+			log.Info().Msgf("received from [%s] packetType [0x%02X] HP [%s] MP [%s] CoordX [%d] CoordY [%d] Exp [%s]",
+				remoteAddr,
+				packet.PacketType,
+				hpStr,
+				mpStr,
+				packet.CoordX,
+				packet.CoordY,
+				expStr)
 		}
 
 	default:
