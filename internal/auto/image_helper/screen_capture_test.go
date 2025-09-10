@@ -1,47 +1,21 @@
 package image_helper
 
 import (
-	"auto_healer/internal/auto/window_helper"
 	"image/png"
 	"os"
 	"testing"
-
-	"golang.org/x/sys/windows"
 )
 
-func TestCaptureScreen(t *testing.T) {
-	user32 := windows.NewLazySystemDLL("user32.dll")
-	isWindowVisible := user32.NewProc("IsWindowVisible")
-
-	// Find the window with the title "PingInfoView"
-	windowName := "PingInfoView"
-	hwnd, err := window_helper.FindWindow(windowName)
+func TestCaptureBaramScreen(t *testing.T) {
+	// Attempt to capture the Baram screen
+	img, err := CaptureBaramScreen()
 	if err != nil {
-		t.Errorf("Error finding window: %v\n", err)
+		t.Errorf("Failed to capture Baram screen: %v\n", err)
 		return
 	}
 
-	if hwnd == 0 {
-		t.Errorf("Window with title '%s' not found.\n", windowName)
-		return
-	}
-
-	// Check if the window is visible
-	visible, _, _ := isWindowVisible.Call(hwnd)
-	if visible == 0 {
-		t.Errorf("Window with title '%s' is not visible.\n", windowName)
-		return
-	}
-
-	// Capture the screen of the found window
-	img, err := CaptureScreen(hwnd)
-	if err != nil {
-		t.Errorf("Failed to capture screen: %v\n", err)
-		return
-	}
-
-	// Save the captured image to a file
-	file, err := os.Create("./capture.png")
+	// Save the captured image to a file for verification
+	file, err := os.Create("./baram_capture.png")
 	if err != nil {
 		t.Errorf("Failed to create file: %v\n", err)
 		return
@@ -54,5 +28,5 @@ func TestCaptureScreen(t *testing.T) {
 		return
 	}
 
-	t.Logf("Screen captured and saved to ./capture.png")
+	t.Logf("Baram screen captured and saved to ./baram_capture.png")
 }
