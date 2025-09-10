@@ -5,6 +5,7 @@ import (
 	"auto_healer/internal/auto/window_helper"
 	"fmt"
 	"image"
+	"image/color"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -114,4 +115,43 @@ func CaptureScreen(hwnd uintptr) (image.Image, error) {
 	}
 
 	return img, nil
+}
+
+func PreProcessingCaptureScreen(hwnd uintptr) (image.Image, error) {
+	// 캡처된 이미지를 가져옵니다.
+	img, err := CaptureScreen(hwnd)
+	if err != nil {
+		return nil, err
+	}
+
+	// RGBA 이미지를 가져옵니다.
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+	processedImg := image.NewRGBA(image.Rect(0, 0, width, height))
+
+	// 전처리: 그레이스케일 변환, 색상 양자화, 임계값 기반 이진화
+	threshold := uint8(128) // 임계값
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			// 원본 픽셀 색상 가져오기
+			r, g, b, a := img.At(x, y).RGBA()
+
+			// 1. 그레이스케일 변환 (리소스 가장 많이 먹음)
+			gray := uint8((r + g + b) / 3 >> 8) // 평균값을 계산하고 16비트에서 8비트로 변환
+
+			// 2. 색상 양자화 (예: 4단계로 나누기) (리소스 중간)
+			quantized := uint8((gray / 64) * 64) // 0, 64, 128, 192로 제한
+
+			// 3. 임계값 기반 이진화 (리소스 적게 먹음)
+			binary := uint8(0)
+			if quantized > threshold {
+				binary = 255
+			}
+
+			// 새로운 픽셀 설정
+			processedImg.Set(x, y, color.RGBA{R: binary, G: binary, B: binary, A: uint8(a >> 8)})
+		}
+	}
+
+	return processedImg, nil
 }
