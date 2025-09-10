@@ -1,0 +1,6 @@
+[submodule "modules/tcp_packet"]
+	path = modules/tcp_packet
+	url = https://github.com/shinjunghyun/tcp_packet.git
+[submodule "modules/logger"]
+	path = modules/logger
+	url = https://github.com/shinjunghyun/logger.git
