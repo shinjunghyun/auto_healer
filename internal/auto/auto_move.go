@@ -50,6 +50,8 @@ func AutoMove(ctx context.Context) {
 func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
 	var err error
 
+	log.Debug().Msgf("auto-move: server [%d, %d] client [%d, %d]", ServerCharacter.CoordX, ServerCharacter.CoordY, ClientCharacter.CoordX, ClientCharacter.CoordY)
+
 	// 거리 계산
 	xDistance := abs(ClientCharacter.CoordX - ServerCharacter.CoordX)
 	yDistance := abs(ClientCharacter.CoordY - ServerCharacter.CoordY)
@@ -58,7 +60,7 @@ func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	if time.Since(lastClientUpdateTime) > time.Duration(randomMoveMilliseconds)*time.Millisecond &&
 		ClientCharacter.CoordX == lastClientCoordX &&
 		ClientCharacter.CoordY == lastClientCoordY {
-		log.Warn().Msg("Wall detected! Performing random move.")
+		log.Warn().Msg("wall detected! performing random move")
 		randomMove()
 		return
 	}
@@ -136,23 +138,39 @@ func randomChance(percent int) bool {
 func moveLeft() {
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(20 * time.Millisecond)
+
 	simulator.SendKeyboardInput(keybd_event.VK_LEFT)
 }
 
 func moveRight() {
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(20 * time.Millisecond)
+
 	simulator.SendKeyboardInput(keybd_event.VK_RIGHT)
 }
 
 func moveUp() {
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(20 * time.Millisecond)
+
 	simulator.SendKeyboardInput(keybd_event.VK_UP)
 }
 
 func moveDown() {
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(20 * time.Millisecond)
+
 	simulator.SendKeyboardInput(keybd_event.VK_DOWN)
 }

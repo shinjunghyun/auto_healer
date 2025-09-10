@@ -19,7 +19,7 @@ func init() {
 }
 
 func SendKeyboardInput(key int) (err error) {
-	log.Debug().Msgf("simulating keyCode [0x%02X]...", key)
+	log.Trace().Msgf("simulating keyCode [0x%02X]...", key)
 	kb.SetKeys(key)
 	return kb.Launching()
 }

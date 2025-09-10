@@ -56,6 +56,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 				os.Exit(0)
 			}
 
+		// F6: Auto Move
 		case k.VKCode == types.VK_F6 && k.Message == types.WM_KEYDOWN:
 			if autoMoveCtx == nil {
 				autoMoveCtx, autoMoveCancel = context.WithCancelCause(context.Background())
@@ -65,6 +66,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 				autoMoveCtx = nil
 			}
 
+		// F7: Auto Heal
 		case k.VKCode == types.VK_F7 && k.Message == types.WM_KEYDOWN:
 			if autoHealCtx == nil {
 				autoHealCtx, autoHealCancel = context.WithCancelCause(context.Background())
@@ -74,6 +76,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 				autoHealCtx = nil
 			}
 
+		// F8: Auto Debuf
 		case k.VKCode == types.VK_F8 && k.Message == types.WM_KEYDOWN:
 			if autoDebufCtx == nil {
 				autoDebufCtx, autoDebufCancel = context.WithCancelCause(context.Background())

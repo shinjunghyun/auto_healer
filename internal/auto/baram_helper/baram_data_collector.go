@@ -10,14 +10,6 @@ func GetCoordinates() (x, y int32, err error) {
 	return 0, 0, fmt.Errorf("not implemented yet")
 }
 
-func GetHP() (hp uint32, err error) {
-	return 0, fmt.Errorf("not implemented yet")
-}
-
-func GetMP() (mp uint32, err error) {
-	return 0, fmt.Errorf("not implemented yet")
-}
-
-func GetExp() (exp uint64, err error) {
-	return 0, fmt.Errorf("not implemented yet")
+func GetHpMpExp() (hp, mp uint32, exp uint64, err error) {
+	return 0, 0, 0, fmt.Errorf("not implemented yet")
 }
