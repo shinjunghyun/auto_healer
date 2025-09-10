@@ -7,62 +7,55 @@ import (
 )
 
 func TestGetPixelColor(t *testing.T) {
+	// Create a test image
+	img := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	img.Set(5, 5, color.RGBA{R: 255, G: 128, B: 64, A: 255}) // Set a specific pixel color
+
 	tests := []struct {
 		name      string
-		img       image.Image
 		x, y      int
-		tolerance float32
 		wantColor uint32
 		wantErr   bool
 	}{
 		{
-			name: "Valid pixel within bounds",
-			img: func() image.Image {
-				img := image.NewRGBA(image.Rect(0, 0, 10, 10))
-				img.Set(5, 5, color.RGBA{R: 255, G: 0, B: 0, A: 255})
-				return img
-			}(),
+			name:      "Valid pixel",
 			x:         5,
 			y:         5,
-			tolerance: 0,
-			wantColor: 0xFF0000FF,
+			wantColor: uint32((255 << 24) | (128 << 16) | (64 << 8) | 255),
 			wantErr:   false,
 		},
 		{
-			name: "Pixel out of bounds",
-			img: func() image.Image {
-				return image.NewRGBA(image.Rect(0, 0, 10, 10))
-			}(),
-			x:         15,
-			y:         15,
-			tolerance: 0,
-			wantColor: 0,
+			name:      "Out of bounds (negative coordinates)",
+			x:         -1,
+			y:         -1,
+			wantColor: 0xFFFFFFFF, // Use 0xFFFFFFFF as a sentinel value for invalid color
 			wantErr:   true,
 		},
 		{
-			name: "Transparent pixel",
-			img: func() image.Image {
-				img := image.NewRGBA(image.Rect(0, 0, 10, 10))
-				img.Set(2, 2, color.RGBA{R: 0, G: 0, B: 0, A: 0})
-				return img
-			}(),
-			x:         2,
-			y:         2,
-			tolerance: 0,
-			wantColor: 0x00000000,
+			name:      "Out of bounds (exceeds image size)",
+			x:         10,
+			y:         10,
+			wantColor: 0xFFFFFFFF, // Use 0xFFFFFFFF as a sentinel value for invalid color
+			wantErr:   true,
+		},
+		{
+			name:      "Another valid pixel",
+			x:         0,
+			y:         0,
+			wantColor: 0, // Default color is black with full alpha
 			wantErr:   false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotColor, err := GetPixelColor(tt.img, tt.x, tt.y, tt.tolerance)
+			gotColor, err := GetPixelColor(img, tt.x, tt.y)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetPixelColor() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if err == nil && *gotColor != tt.wantColor {
-				t.Errorf("GetPixelColor() gotColor = %v, want %v", *gotColor, tt.wantColor)
+			if uint32(gotColor) != tt.wantColor {
+				t.Errorf("GetPixelColor() = %v, want %v", gotColor, tt.wantColor)
 			}
 		})
 	}
