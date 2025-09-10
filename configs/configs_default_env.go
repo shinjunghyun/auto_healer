@@ -14,4 +14,6 @@ const (
 	LOG_COMPRESSION  bool   = true
 
 	TCP_RECONNECT_INTERVAL_SECONDS = 5
+
+	BARAM_WINDOW_TITLE string = "MapleStory Worlds-바람의나라 클래식"
 )

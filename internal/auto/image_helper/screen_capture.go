@@ -1,11 +1,28 @@
 package image_helper
 
 import (
+	"auto_healer/configs"
+	"auto_healer/internal/auto/window_helper"
+	"fmt"
 	"image"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
+
+func CaptureBaramScreen() (image.Image, error) {
+	windowName := configs.BARAM_WINDOW_TITLE
+	hwnd, err := window_helper.FindWindow(windowName)
+	if err != nil {
+		return nil, err
+	}
+
+	if hwnd == 0 {
+		return nil, fmt.Errorf("window with title '%s' not found", windowName)
+	}
+
+	return CaptureScreen(hwnd)
+}
 
 func CaptureScreen(hwnd uintptr) (image.Image, error) {
 	user32 := windows.NewLazySystemDLL("user32.dll")

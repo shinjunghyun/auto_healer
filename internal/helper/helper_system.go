@@ -13,7 +13,6 @@ import (
 
 var (
 	servicePackageName = env.GetEnv("SERVICE_NAME", configs.SERVICE_NAME)
-	serverLiveType     = env.GetEnv("SERVER_LIVE_TYPE", configs.SERVER_LIVE_TYPE)
 	serverDebugLevel   = env.GetEnv("DEBUG_LEVEL", configs.DEBUG_LEVEL)
 )
 

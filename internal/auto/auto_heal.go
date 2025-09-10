@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	ClientMinHP = 50_000
-	ClientMaxHP = 100_000
+	ClientMinHP = 75_000
+	ClientMaxHP = 150_000
 	ClientMinMp = 30_000
 
 	ServerMinHP = 1_400_000
