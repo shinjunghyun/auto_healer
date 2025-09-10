@@ -15,5 +15,10 @@ const (
 
 	TCP_RECONNECT_INTERVAL_SECONDS = 5
 
-	BARAM_WINDOW_TITLE string = "MapleStory Worlds-바람의나라 클래식"
+	TCP_SERVER_HOST = "49.172.185.152"
+	TCP_SERVER_PORT = 9833
+
+	BARAM_WINDOW_TITLE  string = "MapleStory Worlds-바람의나라 클래식"
+	BARAM_WINDOW_WIDTH  int    = 800
+	BARAM_WINDOW_HEIGHT int    = 600
 )

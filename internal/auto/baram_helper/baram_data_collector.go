@@ -15,7 +15,7 @@ func readNumber(img image.Image, baseX, baseY, offset, digits int) (uint64, erro
 		// 숫자 0~9를 탐색
 		for i := range 10 {
 			allMatch := true
-			for _, targetPixel := range CoordsNumberPixlesMap[int8(i)] {
+			for _, targetPixel := range BaramNumberPixlesMap[int8(i)] {
 				color, err := image_helper.GetPixelColor(img, digitX+int(targetPixel.X), baseY+int(targetPixel.Y))
 				if err != nil {
 					return 0, err

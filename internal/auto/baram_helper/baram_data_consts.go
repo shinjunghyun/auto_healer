@@ -11,7 +11,7 @@ type PixelPointColor struct {
 }
 
 var (
-	CoordsNumberPixlesMap map[int8][]PixelPointColor = map[int8][]PixelPointColor{
+	BaramNumberPixlesMap map[int8][]PixelPointColor = map[int8][]PixelPointColor{
 		0: {
 			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
 			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},

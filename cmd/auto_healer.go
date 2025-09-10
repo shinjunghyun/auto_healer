@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"auto_healer/configs"
+	"auto_healer/internal/auto/window_helper"
 	"auto_healer/internal/config"
 	"auto_healer/internal/helper"
 	"auto_healer/internal/hooker"
@@ -11,6 +12,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -50,16 +52,28 @@ func AutoHealerStart(gitCommit, buildTime string) {
 	go startTCPClient()
 	go hooker.StartKeyboardHooker(input_event_handler.HandleInputEvent)
 
+	log.Info().Msgf("starting to setup the baram window...")
+	if hwnd, err := window_helper.FindWindow(configs.BARAM_WINDOW_TITLE); err != nil {
+		log.Error().Msgf("error at finding window: %s", err.Error())
+		time.Sleep(5 * time.Second)
+		os.Exit(1)
+	} else if hwnd == 0 {
+		log.Error().Msgf("window with title '%s' not found", configs.BARAM_WINDOW_TITLE)
+		time.Sleep(5 * time.Second)
+		os.Exit(2)
+	} else if ok := window_helper.ResizeWindow(hwnd, int32(configs.BARAM_WINDOW_WIDTH), int32(configs.BARAM_WINDOW_HEIGHT)); !ok {
+		log.Error().Msgf("error at resizing window [%s]", configs.BARAM_WINDOW_TITLE)
+		time.Sleep(5 * time.Second)
+		os.Exit(3)
+	} else {
+		log.Info().Msgf("success to setup the baram window [%s]", configs.BARAM_WINDOW_TITLE)
+	}
+
 	<-make(chan struct{})
 }
 
 func startTCPClient() {
-	// const host = "192.168.137.65"
-	// const host = "127.0.0.1"
-	const host = "49.172.185.152"
-	const port = "9833"
-
-	address := net.JoinHostPort(host, port)
+	address := net.JoinHostPort(configs.TCP_SERVER_HOST, strconv.FormatInt(configs.TCP_SERVER_PORT, 10))
 
 	for {
 		log.Info().Msgf("attempting to tcp connect to %s...", address)
