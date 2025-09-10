@@ -14,6 +14,7 @@ var (
 	mtx sync.Mutex
 
 	ServerBaramInfoData ServerBaramInfo
+	ClientBaramInfoData tcp_packet.PacketBaramInfo
 )
 
 type ServerBaramInfo struct {
