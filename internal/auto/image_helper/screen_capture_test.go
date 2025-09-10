@@ -15,7 +15,7 @@ func TestCaptureBaramScreen(t *testing.T) {
 	}
 
 	// Save the captured image to a file for verification
-	file, err := os.Create("./baram_capture.png")
+	file, err := os.Create("./1baram_capture.png")
 	if err != nil {
 		t.Errorf("Failed to create file: %v\n", err)
 		return

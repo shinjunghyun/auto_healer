@@ -3,5 +3,13 @@
          "-v",
         "-args",
         "-test.v",
-    ]
+    ],
+    // "go.testEnvVars": {
+    //     "CGO_ENABLED": "1",
+    //     "CGO_CFLAGS": "-IC:/msys64/mingw64/include/leptonica",
+    //     "CGO_LDFLAGS": "-LC:/msys64/mingw64/lib -lleptonica",
+    //     "PKG_CONFIG_PATH": "C:/msys64/mingw64/lib/pkgconfig",
+    //     "PATH": "C:\\msys64\\mingw64\\bin;${env:PATH}",
+    //     "TESSDATA_PREFIX": "C:/msys64/mingw64/share/tessdata"
+    // }
 }

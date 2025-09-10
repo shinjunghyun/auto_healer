@@ -19,6 +19,6 @@ const (
 	TCP_SERVER_PORT = 9833
 
 	BARAM_WINDOW_TITLE  string = "MapleStory Worlds-바람의나라 클래식"
-	BARAM_WINDOW_WIDTH  int    = 800
-	BARAM_WINDOW_HEIGHT int    = 600
+	BARAM_WINDOW_WIDTH  int    = 1296 // (실제론 1282,752)
+	BARAM_WINDOW_HEIGHT int    = 759  // (실제론 1282,752)
 )

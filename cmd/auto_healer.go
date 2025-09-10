@@ -52,6 +52,10 @@ func AutoHealerStart(gitCommit, buildTime string) {
 	go startTCPClient()
 	go hooker.StartKeyboardHooker(input_event_handler.HandleInputEvent)
 
+	// FIXME: TEST CODE!!!!
+	// testCode()
+	// FIXME: FINISH TEST CODE!!!
+
 	log.Info().Msgf("starting to setup the baram window...")
 	if hwnd, err := window_helper.FindWindow(configs.BARAM_WINDOW_TITLE); err != nil {
 		log.Error().Msgf("error at finding window: %s", err.Error())

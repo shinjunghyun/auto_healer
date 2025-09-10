@@ -4,15 +4,12 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/lxn/win"
 	"golang.org/x/sys/windows"
 )
 
 var (
 	user32                  = windows.NewLazySystemDLL("user32.dll")
-	enumWindows             = user32.NewProc("EnumWindows")
-	getWindowTextW          = user32.NewProc("GetWindowTextW")
-	getWindowTextLengthW    = user32.NewProc("GetWindowTextLengthW")
-	isWindowVisible         = user32.NewProc("IsWindowVisible")
 	procSetWindowPos        = user32.NewProc("SetWindowPos")
 	procSetForegroundWindow = user32.NewProc("SetForegroundWindow")
 	procFindWindow          = user32.NewProc("FindWindowW")
@@ -56,4 +53,23 @@ func ActivateWindow(hwnd uintptr) bool {
 	ret, _, _ := procSetForegroundWindow.Call(hwnd)
 
 	return ret != 0
+}
+
+func GetClientBounds(hwnd uintptr) *win.RECT {
+	var rect win.RECT
+	if !win.GetClientRect(win.HWND(hwnd), &rect) {
+		return nil
+	}
+
+	var point win.POINT
+	if !win.ClientToScreen(win.HWND(hwnd), &point) {
+		return nil
+	}
+
+	rect.Right = point.X + rect.Right
+	rect.Bottom = point.Y + rect.Bottom
+	rect.Left = point.X
+	rect.Top = point.Y
+
+	return &rect
 }
