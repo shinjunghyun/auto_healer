@@ -60,7 +60,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 		case k.VKCode == types.VK_F6 && k.Message == types.WM_KEYDOWN:
 			if autoMoveCtx == nil {
 				autoMoveCtx, autoMoveCancel = context.WithCancelCause(context.Background())
-				callback(input_event_handler.HandlerTypeMove, autoMoveCtx)
+				go callback(input_event_handler.HandlerTypeMove, autoMoveCtx)
 			} else {
 				autoMoveCancel(fmt.Errorf("canceled by user"))
 				autoMoveCtx = nil
@@ -70,7 +70,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 		case k.VKCode == types.VK_F7 && k.Message == types.WM_KEYDOWN:
 			if autoHealCtx == nil {
 				autoHealCtx, autoHealCancel = context.WithCancelCause(context.Background())
-				callback(input_event_handler.HandlerTypeHeal, autoHealCtx)
+				go callback(input_event_handler.HandlerTypeHeal, autoHealCtx)
 			} else {
 				autoHealCancel(fmt.Errorf("canceled by user"))
 				autoHealCtx = nil
@@ -80,7 +80,7 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 		case k.VKCode == types.VK_F8 && k.Message == types.WM_KEYDOWN:
 			if autoDebufCtx == nil {
 				autoDebufCtx, autoDebufCancel = context.WithCancelCause(context.Background())
-				callback(input_event_handler.HandlerTypeDebuf, autoDebufCtx)
+				go callback(input_event_handler.HandlerTypeDebuf, autoDebufCtx)
 			} else {
 				autoDebufCancel(fmt.Errorf("canceled by user"))
 				autoDebufCtx = nil
@@ -109,8 +109,11 @@ func ignoreKeyboardHookHandler(c chan<- types.KeyboardEvent) types.HOOKPROC {
 			}
 
 			switch (*types.KBDLLHOOKSTRUCT)(unsafe.Pointer(lParam)).VKCode {
-			case types.VK_BROWSER_SEARCH: // 이런식으로 쓰자
-				fallthrough
+			case types.VK_F6,
+				types.VK_F7,
+				types.VK_F8:
+				return 1
+
 			default:
 				return win32.CallNextHookEx(0, code, wParam, lParam)
 			}

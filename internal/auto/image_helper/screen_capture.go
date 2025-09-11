@@ -21,7 +21,28 @@ func CaptureBaramScreen() (image.Image, error) {
 		return nil, fmt.Errorf("window with title '%s' not found", windowName)
 	}
 
-	return PreProcessingCaptureScreen(hwnd)
+	// fullImg, err := PreProcessingCaptureScreen(hwnd)
+	fullImg, err := CaptureScreen(hwnd)
+	if err != nil {
+		return nil, err
+	}
+
+	// 바람 화면 영역 좌표
+	x, y := 170, 27
+	width, height := 1024, 768
+
+	bounds := image.Rect(x, y, x+width, y+height)
+	croppedImg := image.NewRGBA(image.Rect(0, 0, width, height))
+
+	for cy := bounds.Min.Y; cy < bounds.Max.Y; cy++ {
+		for cx := bounds.Min.X; cx < bounds.Max.X; cx++ {
+			if cx < fullImg.Bounds().Max.X && cy < fullImg.Bounds().Max.Y {
+				croppedImg.Set(cx-x, cy-y, fullImg.At(cx, cy))
+			}
+		}
+	}
+
+	return croppedImg, nil
 }
 
 func CaptureScreen(hwnd uintptr) (image.Image, error) {
@@ -59,17 +80,21 @@ func PreProcessingCaptureScreen(hwnd uintptr) (image.Image, error) {
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			// 원본 픽셀 색상 가져오기
-			r, g, b, a := img.At(x, y).RGBA()
+			r, g, b, _ := img.At(x, y).RGBA()
 
-			// RGB 평균값을 바로 이진화
-			avgColor := uint8((r + g + b) / 3 >> 8)
-			binary := uint8(0)
-			if avgColor > threshold {
-				binary = 255
+			// RGB 평균값 계산 (16비트 값)
+			avgColor := (r + g + b) / 3
+
+			// color.RGBA는 8비트 값을 사용하므로, 완전한 흑백으로만 설정
+			var binary uint8
+			if avgColor > uint32(threshold)<<8 {
+				binary = 255 // 완전한 흰색
+			} else {
+				binary = 0 // 완전한 검정
 			}
 
-			// 새로운 픽셀 설정
-			processedImg.Set(x, y, color.RGBA{R: binary, G: binary, B: binary, A: uint8(a >> 8)})
+			// alpha 값은 완전 불투명으로 설정
+			processedImg.Set(x, y, color.RGBA{R: binary, G: binary, B: binary, A: 255})
 		}
 	}
 

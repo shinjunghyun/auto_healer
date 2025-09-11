@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	ClientMinHP = 75_000
-	ClientMaxHP = 150_000
-	ClientMinMp = 30_000
+	ClientMinHpPercent = 12.5
+	ClientMaxHpPercent = 25
+	ClientMinMpPercent = 5
 
-	ServerMinHP = 1_400_000
+	ServerMinHpPercent = 100
 )
 
 var (
@@ -36,12 +36,11 @@ func AutoHeal(ctx context.Context) {
 				log.Error().Msgf("received baram info is too old to use [%s] ago", time.Since(ServerBaramInfoData.LastUpdatedAt).String())
 				continue
 			} else {
-				var err error
-
 				// 클라이언트의 체마 갱신
-				ClientBaramInfoData.HP, ClientBaramInfoData.MP, ClientBaramInfoData.Exp, err = baram_helper.GetHpMpExp()
+				var err error
+				ClientBaramInfoData.HpPercent, ClientBaramInfoData.MpPercent, err = baram_helper.GetHpMpPercent()
 				if err != nil {
-					log.Error().Msgf("error at retrieving HpMpExp, will skip auto heal: %s", err.Error())
+					log.Error().Msgf("error at retrieving HpMpPercent, will skip auto heal: %s", err.Error())
 					continue
 				}
 
@@ -54,37 +53,37 @@ func AutoHeal(ctx context.Context) {
 func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
 	var err error
 
-	log.Debug().Msgf("auto-heal: server [%d/%d] client [%d/%d]", ServerCharacter.HP, ServerCharacter.MP, ClientCharacter.HP, ClientCharacter.MP)
+	log.Debug().Msgf("auto-heal: server [%1.f/%1.f] client [%1.f/%1.f]", ServerCharacter.HpPercent, ServerCharacter.MpPercent, ClientCharacter.HpPercent, ClientCharacter.MpPercent)
 
 	// 마나 충전 확인
-	if ClientCharacter.MP < ClientMinMp {
-		log.Debug().Msgf("charging mana... [%d, %d]", ClientCharacter.MP, ClientMinMp)
+	if ClientCharacter.MpPercent < ClientMinMpPercent {
+		log.Debug().Msgf("charging mana... [%.1f, %.1f]", ClientCharacter.MpPercent, ClientMinMpPercent)
 		ChargeMP()
 		return
 	}
 
 	// 자기 체력 확인
-	if isSelfHealing || ClientCharacter.HP < ClientMinHP {
-		log.Debug().Msgf("self healing... [%d, %d, %d]", ClientMinHP, ClientCharacter.HP, ClientMaxHP)
+	if isSelfHealing || ClientCharacter.HpPercent < ClientMinHpPercent {
+		log.Debug().Msgf("self healing... [%.1f, %.1f, %.1f]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
 		isSelfHealing = true
 		SelfHeal()
 
 		// 클라이언트의 체마 갱신
-		ClientBaramInfoData.HP, ClientBaramInfoData.MP, ClientBaramInfoData.Exp, err = baram_helper.GetHpMpExp()
+		ClientBaramInfoData.HpPercent, ClientBaramInfoData.MpPercent, err = baram_helper.GetHpMpPercent()
 		if err != nil {
-			log.Error().Msgf("error at retrieving HpMpExp, will skip auto heal: %s", err.Error())
+			log.Error().Msgf("error at retrieving HpMpPercent, will skip auto heal: %s", err.Error())
 			return
 		}
 
-		if ClientCharacter.HP >= ClientMaxHP {
+		if ClientCharacter.HpPercent >= ClientMaxHpPercent {
 			isSelfHealing = false
 		}
 		return
 	}
 
 	// 상대 체력 확인
-	if ServerCharacter.HP < ServerMinHP {
-		log.Debug().Msgf("party healing... [%d, %d]", ServerCharacter.HP, ServerMinHP)
+	if ServerCharacter.HpPercent < ServerMinHpPercent {
+		log.Debug().Msgf("party healing... [%.1f, %.1f]", ServerCharacter.HpPercent, ServerMinHpPercent)
 		PartyHeal()
 		return
 	}

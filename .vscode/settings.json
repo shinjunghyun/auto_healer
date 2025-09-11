@@ -6,10 +6,12 @@
     ],
     // "go.testEnvVars": {
     //     "CGO_ENABLED": "1",
-    //     "CGO_CFLAGS": "-IC:/msys64/mingw64/include/leptonica",
-    //     "CGO_LDFLAGS": "-LC:/msys64/mingw64/lib -lleptonica",
+    //     "CGO_CFLAGS": "-IC:/msys64/mingw64/include/leptonica -IC:/tools/opencv/build/include",
+    //     "CGO_LDFLAGS": "-LC:/msys64/mingw64/lib -lleptonica -LC:/tools/opencv/build/x64/vc16/lib -lopencv_world4110",
+    //     // "CGO_CFLAGS": "-IC:/msys64/mingw64/include/leptonica",
+    //     // "CGO_LDFLAGS": "-LC:/msys64/mingw64/lib -lleptonica",
     //     "PKG_CONFIG_PATH": "C:/msys64/mingw64/lib/pkgconfig",
-    //     "PATH": "C:\\msys64\\mingw64\\bin;${env:PATH}",
-    //     "TESSDATA_PREFIX": "C:/msys64/mingw64/share/tessdata"
-    // }
+    //     "TESSDATA_PREFIX": "C:/msys64/mingw64/share/tessdata",
+    //     "PATH": "C:\\tools\\opencv\\build\\include\\opencv2;C:\\msys64\\mingw64\\bin;${env:PATH}",
+    // },
 }
