@@ -13,8 +13,8 @@ import (
 
 const (
 	ClientMinHpPercent = 12.5
-	ClientMaxHpPercent = 25
-	ClientMinMpPercent = 5
+	ClientMaxHpPercent = 25.0
+	ClientMinMpPercent = 5.0
 
 	ServerMinHpPercent = 100
 )
@@ -53,18 +53,18 @@ func AutoHeal(ctx context.Context) {
 func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
 	var err error
 
-	log.Debug().Msgf("auto-heal: server [%1.f/%1.f] client [%1.f/%1.f]", ServerCharacter.HpPercent, ServerCharacter.MpPercent, ClientCharacter.HpPercent, ClientCharacter.MpPercent)
+	log.Debug().Msgf("auto-heal: server [%1.f%%/%1.f%%] client [%1.f%%/%1.f%%]", ServerCharacter.HpPercent, ServerCharacter.MpPercent, ClientCharacter.HpPercent, ClientCharacter.MpPercent)
 
 	// 마나 충전 확인
 	if ClientCharacter.MpPercent < ClientMinMpPercent {
-		log.Debug().Msgf("charging mana... [%.1f, %.1f]", ClientCharacter.MpPercent, ClientMinMpPercent)
+		log.Debug().Msgf("charging mana... [%.1f%%, %.1f%%]", ClientCharacter.MpPercent, ClientMinMpPercent)
 		ChargeMP()
 		return
 	}
 
 	// 자기 체력 확인
 	if isSelfHealing || ClientCharacter.HpPercent < ClientMinHpPercent {
-		log.Debug().Msgf("self healing... [%.1f, %.1f, %.1f]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
+		log.Debug().Msgf("self healing... [%.1f%%, %.1f%%, %.1f%%]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
 		isSelfHealing = true
 		SelfHeal()
 

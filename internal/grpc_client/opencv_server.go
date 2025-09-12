@@ -58,3 +58,14 @@ func (c *OpenCVClient) FindTabBox(ctx context.Context, req *opencv_proto.FindTab
 	res, err = c.openCVServiceClient.FindTabBox(ctx, req)
 	return res, err
 }
+
+func (c *OpenCVClient) GetHpMpPercent(ctx context.Context, req *opencv_proto.GetHpMpPercentRequest) (res *opencv_proto.GetHpMpPercentResponse, err error) {
+	log.Trace().Msgf("calling opencv-server grpc [GetHpMpPercent]...")
+
+	if c.openCVServiceClient == nil {
+		return nil, fmt.Errorf("opencv grpc client is not initialized, please call Connect() first")
+	}
+
+	res, err = c.openCVServiceClient.GetHpMpPercent(ctx, req)
+	return res, err
+}

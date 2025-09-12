@@ -1,65 +1,14 @@
 package baram_helper
 
-type Point struct {
-	X uint16
-	Y uint16
-}
-
-type PixelPointColor struct {
-	Point
-	color int32
+type Rect struct {
+	X      uint16
+	Y      uint16
+	Width  uint16
+	Height uint16
 }
 
 var (
-	BaramNumberPixlesMap map[int8][]PixelPointColor = map[int8][]PixelPointColor{
-		0: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		1: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		2: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		3: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		4: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		5: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		6: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		7: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		8: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-
-		9: {
-			{Point: Point{X: 10, Y: 10}, color: 0xFFFFFF},
-			{Point: Point{X: 11, Y: 12}, color: 0xFFFFFF},
-		},
-	}
+	BARAM_HP_BOX_RECT    = Rect{X: 859, Y: 647, Width: 140, Height: 16}
+	BARAM_MP_BOX_RECT    = Rect{X: 859, Y: 667, Width: 140, Height: 17}
+	BARAM_HP_MP_BOX_RECT = Rect{X: 859, Y: 647, Width: 140, Height: 37}
 )

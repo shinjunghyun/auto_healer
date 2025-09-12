@@ -24,20 +24,25 @@ var File_opencv_service_proto protoreflect.FileDescriptor
 
 const file_opencv_service_proto_rawDesc = "" +
 	"\n" +
-	"\x14opencv_service.proto\x12\x0eopencv_service\x1a\x14opencv_message.proto2d\n" +
+	"\x14opencv_service.proto\x12\x0eopencv_service\x1a\x14opencv_message.proto2\xc5\x01\n" +
 	"\rOpenCVService\x12S\n" +
 	"\n" +
-	"FindTabBox\x12!.opencv_service.FindTabBoxRequest\x1a\".opencv_service.FindTabBoxResponseB\x14Z\x12build/opencv-protob\x06proto3"
+	"FindTabBox\x12!.opencv_service.FindTabBoxRequest\x1a\".opencv_service.FindTabBoxResponse\x12_\n" +
+	"\x0eGetHpMpPercent\x12%.opencv_service.GetHpMpPercentRequest\x1a&.opencv_service.GetHpMpPercentResponseB\x14Z\x12build/opencv-protob\x06proto3"
 
 var file_opencv_service_proto_goTypes = []any{
-	(*FindTabBoxRequest)(nil),  // 0: opencv_service.FindTabBoxRequest
-	(*FindTabBoxResponse)(nil), // 1: opencv_service.FindTabBoxResponse
+	(*FindTabBoxRequest)(nil),      // 0: opencv_service.FindTabBoxRequest
+	(*GetHpMpPercentRequest)(nil),  // 1: opencv_service.GetHpMpPercentRequest
+	(*FindTabBoxResponse)(nil),     // 2: opencv_service.FindTabBoxResponse
+	(*GetHpMpPercentResponse)(nil), // 3: opencv_service.GetHpMpPercentResponse
 }
 var file_opencv_service_proto_depIdxs = []int32{
 	0, // 0: opencv_service.OpenCVService.FindTabBox:input_type -> opencv_service.FindTabBoxRequest
-	1, // 1: opencv_service.OpenCVService.FindTabBox:output_type -> opencv_service.FindTabBoxResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	1, // 1: opencv_service.OpenCVService.GetHpMpPercent:input_type -> opencv_service.GetHpMpPercentRequest
+	2, // 2: opencv_service.OpenCVService.FindTabBox:output_type -> opencv_service.FindTabBoxResponse
+	3, // 3: opencv_service.OpenCVService.GetHpMpPercent:output_type -> opencv_service.GetHpMpPercentResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

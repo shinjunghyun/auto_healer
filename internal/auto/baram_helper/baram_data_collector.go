@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"image"
 	"image/png"
 	log "logger"
 	"time"
@@ -52,5 +53,41 @@ func FindTabBoxPosition() (x, y int, err error) {
 }
 
 func GetHpMpPercent() (hpPercent, mpPercent float32, err error) {
-	return 0, 0, fmt.Errorf("not implemented yet")
+	img, err := image_helper.CaptureBaramScreen()
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to capture baram screen: %v", err)
+	}
+
+	cropped, err := image_helper.CropImage(img, image.Rectangle{
+		Min: image.Point{X: int(BARAM_HP_MP_BOX_RECT.X), Y: int(BARAM_HP_MP_BOX_RECT.Y)},
+		Max: image.Point{X: int(BARAM_HP_MP_BOX_RECT.X + BARAM_HP_MP_BOX_RECT.Width), Y: int(BARAM_HP_MP_BOX_RECT.Y + BARAM_HP_MP_BOX_RECT.Height)},
+	})
+
+	buf := new(bytes.Buffer)
+	if err := png.Encode(buf, cropped); err != nil {
+		return 0, 0, fmt.Errorf("failed to encode image to PNG: %v", err)
+	}
+	croppedImgBytes := buf.Bytes()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	opencvServer := grpc_client.NewOpenCVServerClient(configs.OPENCV_SERVER_HOST, configs.OPENCV_SERVER_PORT)
+	defer func() {
+		if err := opencvServer.Close(); err != nil {
+			log.Error().Err(err).Msgf("error at closing opencv grpc client from [%s:%d]", configs.OPENCV_SERVER_HOST, configs.OPENCV_SERVER_PORT)
+		}
+	}()
+	if err := opencvServer.Connect(); err != nil {
+		return 0, 0, fmt.Errorf("failed to connect to opencv grpc server [%s:%d]: %v", configs.OPENCV_SERVER_HOST, configs.OPENCV_SERVER_PORT, err)
+	} else if res, err := opencvServer.GetHpMpPercent(ctx, &opencv_proto.GetHpMpPercentRequest{CroppedImage: croppedImgBytes}); err != nil {
+		return 0, 0, fmt.Errorf("failed to get hp/mp percent from opencv grpc server: %v", err)
+	} else {
+		hpPercent := res.GetHpPercent()
+		mpPercent := res.GetMpPercent()
+
+		log.Trace().Msgf("hp percent: %f, mp percent: %f", hpPercent, mpPercent)
+
+		return hpPercent, mpPercent, nil
+	}
 }

@@ -58,7 +58,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			hpPercent := packet.HpPercent
 			mpPercent := packet.MpPercent
 
-			log.Info().Msgf("received from [%s] packetType [0x%02X] HP [%.1f%] MP [%.1f%]",
+			log.Info().Msgf("received from [%s] packetType [0x%02X] HP [%.1f%%] MP [%.1f%%]",
 				remoteAddr,
 				packet.PacketType,
 				hpPercent,

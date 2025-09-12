@@ -185,6 +185,102 @@ func (x *Box) GetHeight() int32 {
 	return 0
 }
 
+type GetHpMpPercentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CroppedImage  []byte                 `protobuf:"bytes,1,opt,name=cropped_image,json=croppedImage,proto3" json:"cropped_image,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHpMpPercentRequest) Reset() {
+	*x = GetHpMpPercentRequest{}
+	mi := &file_opencv_message_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHpMpPercentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHpMpPercentRequest) ProtoMessage() {}
+
+func (x *GetHpMpPercentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_opencv_message_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHpMpPercentRequest.ProtoReflect.Descriptor instead.
+func (*GetHpMpPercentRequest) Descriptor() ([]byte, []int) {
+	return file_opencv_message_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetHpMpPercentRequest) GetCroppedImage() []byte {
+	if x != nil {
+		return x.CroppedImage
+	}
+	return nil
+}
+
+type GetHpMpPercentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	HpPercent     float32                `protobuf:"fixed32,1,opt,name=hp_percent,json=hpPercent,proto3" json:"hp_percent,omitempty"`
+	MpPercent     float32                `protobuf:"fixed32,2,opt,name=mp_percent,json=mpPercent,proto3" json:"mp_percent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHpMpPercentResponse) Reset() {
+	*x = GetHpMpPercentResponse{}
+	mi := &file_opencv_message_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHpMpPercentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHpMpPercentResponse) ProtoMessage() {}
+
+func (x *GetHpMpPercentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_opencv_message_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHpMpPercentResponse.ProtoReflect.Descriptor instead.
+func (*GetHpMpPercentResponse) Descriptor() ([]byte, []int) {
+	return file_opencv_message_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetHpMpPercentResponse) GetHpPercent() float32 {
+	if x != nil {
+		return x.HpPercent
+	}
+	return 0
+}
+
+func (x *GetHpMpPercentResponse) GetMpPercent() float32 {
+	if x != nil {
+		return x.MpPercent
+	}
+	return 0
+}
+
 var File_opencv_message_proto protoreflect.FileDescriptor
 
 const file_opencv_message_proto_rawDesc = "" +
@@ -199,7 +295,14 @@ const file_opencv_message_proto_rawDesc = "" +
 	"\x01x\x18\x01 \x01(\x05R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x05R\x01y\x12\x14\n" +
 	"\x05width\x18\x03 \x01(\x05R\x05width\x12\x16\n" +
-	"\x06height\x18\x04 \x01(\x05R\x06heightB\x14Z\x12build/opencv-protob\x06proto3"
+	"\x06height\x18\x04 \x01(\x05R\x06height\"<\n" +
+	"\x15GetHpMpPercentRequest\x12#\n" +
+	"\rcropped_image\x18\x01 \x01(\fR\fcroppedImage\"V\n" +
+	"\x16GetHpMpPercentResponse\x12\x1d\n" +
+	"\n" +
+	"hp_percent\x18\x01 \x01(\x02R\thpPercent\x12\x1d\n" +
+	"\n" +
+	"mp_percent\x18\x02 \x01(\x02R\tmpPercentB\x14Z\x12build/opencv-protob\x06proto3"
 
 var (
 	file_opencv_message_proto_rawDescOnce sync.Once
@@ -213,11 +316,13 @@ func file_opencv_message_proto_rawDescGZIP() []byte {
 	return file_opencv_message_proto_rawDescData
 }
 
-var file_opencv_message_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_opencv_message_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_opencv_message_proto_goTypes = []any{
-	(*FindTabBoxRequest)(nil),  // 0: opencv_service.FindTabBoxRequest
-	(*FindTabBoxResponse)(nil), // 1: opencv_service.FindTabBoxResponse
-	(*Box)(nil),                // 2: opencv_service.Box
+	(*FindTabBoxRequest)(nil),      // 0: opencv_service.FindTabBoxRequest
+	(*FindTabBoxResponse)(nil),     // 1: opencv_service.FindTabBoxResponse
+	(*Box)(nil),                    // 2: opencv_service.Box
+	(*GetHpMpPercentRequest)(nil),  // 3: opencv_service.GetHpMpPercentRequest
+	(*GetHpMpPercentResponse)(nil), // 4: opencv_service.GetHpMpPercentResponse
 }
 var file_opencv_message_proto_depIdxs = []int32{
 	2, // 0: opencv_service.FindTabBoxResponse.box:type_name -> opencv_service.Box
@@ -239,7 +344,7 @@ func file_opencv_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_opencv_message_proto_rawDesc), len(file_opencv_message_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

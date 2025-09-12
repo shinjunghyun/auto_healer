@@ -8,7 +8,6 @@ package opencv_proto
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OpenCVService_FindTabBox_FullMethodName = "/opencv_service.OpenCVService/FindTabBox"
+	OpenCVService_FindTabBox_FullMethodName     = "/opencv_service.OpenCVService/FindTabBox"
+	OpenCVService_GetHpMpPercent_FullMethodName = "/opencv_service.OpenCVService/GetHpMpPercent"
 )
 
 // OpenCVServiceClient is the client API for OpenCVService service.
@@ -28,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OpenCVServiceClient interface {
 	FindTabBox(ctx context.Context, in *FindTabBoxRequest, opts ...grpc.CallOption) (*FindTabBoxResponse, error)
+	GetHpMpPercent(ctx context.Context, in *GetHpMpPercentRequest, opts ...grpc.CallOption) (*GetHpMpPercentResponse, error)
 }
 
 type openCVServiceClient struct {
@@ -48,11 +49,22 @@ func (c *openCVServiceClient) FindTabBox(ctx context.Context, in *FindTabBoxRequ
 	return out, nil
 }
 
+func (c *openCVServiceClient) GetHpMpPercent(ctx context.Context, in *GetHpMpPercentRequest, opts ...grpc.CallOption) (*GetHpMpPercentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHpMpPercentResponse)
+	err := c.cc.Invoke(ctx, OpenCVService_GetHpMpPercent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OpenCVServiceServer is the server API for OpenCVService service.
 // All implementations must embed UnimplementedOpenCVServiceServer
 // for forward compatibility.
 type OpenCVServiceServer interface {
 	FindTabBox(context.Context, *FindTabBoxRequest) (*FindTabBoxResponse, error)
+	GetHpMpPercent(context.Context, *GetHpMpPercentRequest) (*GetHpMpPercentResponse, error)
 	mustEmbedUnimplementedOpenCVServiceServer()
 }
 
@@ -65,6 +77,9 @@ type UnimplementedOpenCVServiceServer struct{}
 
 func (UnimplementedOpenCVServiceServer) FindTabBox(context.Context, *FindTabBoxRequest) (*FindTabBoxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindTabBox not implemented")
+}
+func (UnimplementedOpenCVServiceServer) GetHpMpPercent(context.Context, *GetHpMpPercentRequest) (*GetHpMpPercentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHpMpPercent not implemented")
 }
 func (UnimplementedOpenCVServiceServer) mustEmbedUnimplementedOpenCVServiceServer() {}
 func (UnimplementedOpenCVServiceServer) testEmbeddedByValue()                       {}
@@ -105,6 +120,24 @@ func _OpenCVService_FindTabBox_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OpenCVService_GetHpMpPercent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHpMpPercentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenCVServiceServer).GetHpMpPercent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OpenCVService_GetHpMpPercent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenCVServiceServer).GetHpMpPercent(ctx, req.(*GetHpMpPercentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OpenCVService_ServiceDesc is the grpc.ServiceDesc for OpenCVService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -115,6 +148,10 @@ var OpenCVService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindTabBox",
 			Handler:    _OpenCVService_FindTabBox_Handler,
+		},
+		{
+			MethodName: "GetHpMpPercent",
+			Handler:    _OpenCVService_GetHpMpPercent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
