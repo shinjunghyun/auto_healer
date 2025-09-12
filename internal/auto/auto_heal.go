@@ -12,20 +12,24 @@ import (
 )
 
 const (
-	ClientMinHpPercent = 12.5
-	ClientMaxHpPercent = 25.0
-	ClientMinMpPercent = 5.0
+	ClientMinHpPercent = 0.125
+	ClientMaxHpPercent = 0.1875
+	ClientMinMpPercent = 0.05
 
-	ServerMinHpPercent = 100
+	ServerMinHpPercent = 1.0
+
+	TabBoxCheckInterval = 500 * time.Millisecond
 )
 
 var (
 	isSelfHealing = false
+
+	lastTabBoxCheckAt time.Time
 )
 
 func AutoHeal(ctx context.Context) {
 	for {
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 		select {
 		case <-ctx.Done():
 			log.Info().Msgf("auto heal context is done")
@@ -95,38 +99,53 @@ func SelfHeal() {
 
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// home
 	simulator.SendKeyboardInput(keybd_event.VK_HOME)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// enter
 	simulator.SendKeyboardInput(keybd_event.VK_ENTER)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 }
 
 func PartyHeal() {
 	mtx.Lock()
 	defer mtx.Unlock()
 
-	// esc
-	simulator.SendKeyboardInput(keybd_event.VK_ESC)
-	time.Sleep(50 * time.Millisecond)
+	// tab box 확인
+	if time.Since(lastTabBoxCheckAt) < TabBoxCheckInterval {
+		log.Trace().Msgf("skipping tab box check, last checked at [%s] ago", time.Since(lastTabBoxCheckAt).String())
+	} else {
+		lastTabBoxCheckAt = time.Now()
+		if _, _, err := baram_helper.FindTabBoxPosition(); err != nil {
+			if err.Error() == "tab box not found in the image" {
+				log.Info().Msgf("tab box not found in the image, will tab to find party member")
 
-	for range 2 {
-		// tab
-		simulator.SendKeyboardInput(keybd_event.VK_TAB)
-		time.Sleep(50 * time.Millisecond)
+				// esc
+				simulator.SendKeyboardInput(keybd_event.VK_ESC)
+				time.Sleep(50 * time.Millisecond)
+
+				for range 2 {
+					// tab
+					simulator.SendKeyboardInput(keybd_event.VK_TAB)
+					time.Sleep(100 * time.Millisecond)
+				}
+
+			} else {
+				log.Error().Msgf("error at finding tab box position, will skip party heal: %s", err.Error())
+				return
+			}
+		}
 	}
-
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 }
 
 func ChargeMP() {
