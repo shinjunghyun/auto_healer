@@ -5,7 +5,7 @@ const (
 
 	SERVICE_NAME string = "auto_healer"
 
-	DEBUG_LEVEL      string = "TRACE"
+	DEBUG_LEVEL      string = "DEBUG"
 	LOG_STYLE        string = "CONSOLE"
 	LOG_FILE_WRITE   bool   = false
 	LOG_MAX_SIZE_MB  int    = 10
@@ -18,6 +18,7 @@ const (
 	TCP_SERVER_HOST = "49.172.185.152"
 	TCP_SERVER_PORT = 9833
 
+	// OPENCV_SERVER_HOST = "127.0.0.1"
 	OPENCV_SERVER_HOST = "49.172.185.152"
 	OPENCV_SERVER_PORT = 9834
 

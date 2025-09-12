@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/go-vgo/robotgo"
 )
 
 var (
@@ -35,6 +37,7 @@ func waitSignal(signals chan os.Signal) {
 
 func shutdown() {
 	log.Info().Msgf("server is in shutting down...")
+	robotgo.MouseUp("right")
 	os.Exit(0)
 }
 

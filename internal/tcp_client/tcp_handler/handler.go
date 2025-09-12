@@ -40,7 +40,7 @@ func SendPacket(packet any) error {
 
 func Dispatcher(conn net.Conn, data []byte) error {
 	remoteAddr := conn.RemoteAddr().String()
-	log.Debug().Msgf("receiving tcp data [%d] from [%s]...", len(data), remoteAddr)
+	log.Trace().Msgf("receiving tcp data [%d] from [%s]...", len(data), remoteAddr)
 
 	pktIntf, err := tcp_packet.DeserializePacket(data)
 	if err != nil {
@@ -50,7 +50,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 	switch packet := pktIntf.(type) {
 	case *tcp_packet.PacketPressed:
 		{
-			log.Info().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
+			log.Trace().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
 		}
 
 	case *tcp_packet.PacketBaramInfo:
@@ -58,7 +58,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			hpPercent := packet.HpPercent
 			mpPercent := packet.MpPercent
 
-			log.Info().Msgf("received from [%s] packetType [0x%02X] HP [%.1f%%] MP [%.1f%%]",
+			log.Trace().Msgf("received from [%s] packetType [0x%02X] HP [%.1f%%] MP [%.1f%%]",
 				remoteAddr,
 				packet.PacketType,
 				hpPercent,

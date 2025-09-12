@@ -17,19 +17,15 @@ const (
 	ClientMinMpPercent = 0.05
 
 	ServerMinHpPercent = 1.0
-
-	TabBoxCheckInterval = 500 * time.Millisecond
 )
 
 var (
 	isSelfHealing = false
-
-	lastTabBoxCheckAt time.Time
 )
 
 func AutoHeal(ctx context.Context) {
 	for {
-		time.Sleep(20 * time.Millisecond)
+		time.Sleep(90 * time.Millisecond)
 		select {
 		case <-ctx.Done():
 			log.Info().Msgf("auto heal context is done")
@@ -41,22 +37,23 @@ func AutoHeal(ctx context.Context) {
 				continue
 			} else {
 				// 클라이언트의 체마 갱신
-				var err error
-				ClientBaramInfoData.HpPercent, ClientBaramInfoData.MpPercent, err = baram_helper.GetHpMpPercent()
-				if err != nil {
-					log.Error().Msgf("error at retrieving HpMpPercent, will skip auto heal: %s", err.Error())
-					continue
+				if time.Since(ClientBaramInfoData.LastUpdatedAt) > 1*time.Second {
+					var err error
+					ClientBaramInfoData.HpPercent, ClientBaramInfoData.MpPercent, err = baram_helper.GetHpMpPercent()
+					if err != nil {
+						log.Error().Msgf("error at retrieving HpMpPercent, will skip auto heal: %s", err.Error())
+						continue
+					}
+					ClientBaramInfoData.LastUpdatedAt = time.Now()
 				}
 
-				performAutoHeal(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData)
+				performAutoHeal(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)
 			}
 		}
 	}
 }
 
 func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
-	var err error
-
 	log.Debug().Msgf("auto-heal: server [%1.f%%/%1.f%%] client [%1.f%%/%1.f%%]", ServerCharacter.HpPercent, ServerCharacter.MpPercent, ClientCharacter.HpPercent, ClientCharacter.MpPercent)
 
 	// 마나 충전 확인
@@ -71,13 +68,6 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 		log.Debug().Msgf("self healing... [%.1f%%, %.1f%%, %.1f%%]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
 		isSelfHealing = true
 		SelfHeal()
-
-		// 클라이언트의 체마 갱신
-		ClientBaramInfoData.HpPercent, ClientBaramInfoData.MpPercent, err = baram_helper.GetHpMpPercent()
-		if err != nil {
-			log.Error().Msgf("error at retrieving HpMpPercent, will skip auto heal: %s", err.Error())
-			return
-		}
 
 		if ClientCharacter.HpPercent >= ClientMaxHpPercent {
 			isSelfHealing = false
@@ -145,16 +135,11 @@ func PartyHeal() {
 	}
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
-	time.Sleep(10 * time.Millisecond)
 }
 
 func ChargeMP() {
 	mtx.Lock()
 	defer mtx.Unlock()
-
-	// esc
-	simulator.SendKeyboardInput(keybd_event.VK_ESC)
-	time.Sleep(50 * time.Millisecond)
 
 	// 4
 	simulator.SendKeyboardInput(keybd_event.VK_4)

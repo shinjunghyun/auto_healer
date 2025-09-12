@@ -2,16 +2,18 @@ package auto
 
 import (
 	"auto_healer/internal/auto/baram_helper"
+	"auto_healer/internal/simulator"
 	"context"
 	log "logger"
 	"time"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/micmonay/keybd_event"
 )
 
 func AutoMove(ctx context.Context) {
 	for {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 		select {
 		case <-ctx.Done():
 			log.Info().Msgf("auto move context is done")
@@ -24,30 +26,45 @@ func AutoMove(ctx context.Context) {
 }
 
 func performAutoMove() {
-	var err error
-
+	mtx.Lock()
+	defer mtx.Unlock()
 	log.Trace().Msgf("auto-move")
 
 	targetX, targetY, err := baram_helper.FindTabBoxPosition()
+
 	if err != nil {
-		log.Error().Msgf("error at finding tab box position, will skip auto move: %s", err.Error())
-		return
+		if err.Error() == "tab box not found in the image" {
+			log.Info().Msgf("tab box not found in the image, will tab to find party member")
+
+			// esc
+			simulator.SendKeyboardInput(keybd_event.VK_ESC)
+			time.Sleep(50 * time.Millisecond)
+
+			for range 2 {
+				// tab
+				simulator.SendKeyboardInput(keybd_event.VK_TAB)
+				time.Sleep(100 * time.Millisecond)
+			}
+		} else {
+			log.Error().Msgf("error at finding tab box position, will skip auto move: %s", err.Error())
+			return
+		}
 	}
 
-	moveRightClick(int32(targetX), int32(targetY))
+	if targetX > 0 && targetY > 0 {
+		moveRightClick(int32(targetX), int32(targetY))
+	}
 }
 
 func moveRightClick(x, y int32) {
-	mtx.Lock()
-	defer mtx.Unlock()
-
 	startX, startY, err := baram_helper.GetBaramWindowStartPosition()
 	if err != nil {
 		log.Error().Err(err).Msgf("error at getting baram window start position, will skip auto move")
 		return
 	}
 	offsetX, offsetY := 170, 27
+	targetX, targetY := startX+offsetX+int(x), startY+offsetY+int(y)
 
-	robotgo.Move(startX+offsetX+int(x), startY+offsetY+int(y))
-	robotgo.Click("right", false)
+	robotgo.Move(targetX, targetY)
+	robotgo.Click("right")
 }
