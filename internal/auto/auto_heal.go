@@ -59,18 +59,18 @@ func AutoHeal(ctx context.Context) {
 }
 
 func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
-	log.Debug().Msgf("auto-heal: server [%1.f%%/%1.f%%] client [%1.f%%/%1.f%%]", ServerCharacter.HpPercent, ServerCharacter.MpPercent, ClientCharacter.HpPercent, ClientCharacter.MpPercent)
+	log.Debug().Msgf("auto-heal: server [%.f%%/%1.f%%] client [%.f%%/%.f%%]", ServerCharacter.HpPercent*100, ServerCharacter.MpPercent*100, ClientCharacter.HpPercent*100, ClientCharacter.MpPercent*100)
 
 	// 마나 충전 확인
 	if ClientCharacter.MpPercent < ClientMinMpPercent {
-		log.Debug().Msgf("charging mana... [%.1f%%, %.1f%%]", ClientCharacter.MpPercent, ClientMinMpPercent)
+		log.Debug().Msgf("charging mana... [%.3f%%, %.3f%%]", ClientCharacter.MpPercent*100, ClientMinMpPercent*100)
 		ChargeMP()
 		return
 	}
 
 	// 자기 체력 확인
 	if isSelfHealing || ClientCharacter.HpPercent < ClientMinHpPercent {
-		log.Debug().Msgf("self healing... [%.1f%%, %.1f%%, %.1f%%]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
+		log.Debug().Msgf("self healing... [%.3f%%, %.3f%%, %.3f%%]", ClientMinHpPercent*100, ClientCharacter.HpPercent*100, ClientMaxHpPercent*100)
 		isSelfHealing = true
 		SelfHeal(ClientCharacter.HpPercent)
 
@@ -82,7 +82,7 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 
 	// 상대 체력 확인
 	if ServerCharacter.HpPercent < ServerMinHpPercent {
-		log.Debug().Msgf("party healing... [%.1f, %.1f]", ServerCharacter.HpPercent, ServerMinHpPercent)
+		log.Debug().Msgf("party healing... [%.3f%%, %.3f%%]", ServerCharacter.HpPercent*100, ServerMinHpPercent*100)
 		PartyHeal(ServerCharacter.HpPercent)
 		return
 	}
@@ -107,7 +107,7 @@ func SelfHeal(hp float32) {
 
 		// enter
 		simulator.SendKeyboardInput(keybd_event.VK_ENTER)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	// 3
@@ -173,11 +173,11 @@ func ChargeMP() {
 
 	// 4
 	simulator.SendKeyboardInput(keybd_event.VK_4)
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	// home
 	simulator.SendKeyboardInput(keybd_event.VK_HOME)
@@ -189,7 +189,7 @@ func ChargeMP() {
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	// enter
 	simulator.SendKeyboardInput(keybd_event.VK_ENTER)

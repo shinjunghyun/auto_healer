@@ -122,11 +122,11 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			hpPercent := packet.HpPercent
 			mpPercent := packet.MpPercent
 
-			log.Trace().Msgf("received from [%s] packetType [0x%02X] HP [%.1f%%] MP [%.1f%%]",
+			log.Trace().Msgf("received from [%s] packetType [0x%02X] HP [%.3f%%] MP [%.3f%%]",
 				remoteAddr,
 				packet.PacketType,
-				hpPercent,
-				mpPercent)
+				hpPercent*100,
+				mpPercent*100)
 
 			auto.ServerBaramInfoData = auto.ServerBaramInfo{
 				PacketBaramInfo: *packet,
