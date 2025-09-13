@@ -20,6 +20,10 @@ func AutoMove(ctx context.Context) {
 			return
 
 		default:
+			if isSelfHealing {
+				log.Debug().Msgf("currently self-healing, will skip moving...")
+				continue
+			}
 			performAutoMove()
 		}
 	}
@@ -45,6 +49,11 @@ func performAutoMove() {
 				simulator.SendKeyboardInput(keybd_event.VK_TAB)
 				time.Sleep(100 * time.Millisecond)
 			}
+			targetX, targetY, err = baram_helper.FindTabBoxPosition()
+			if err != nil {
+				log.Err(err).Msgf("error at finding tab box position after tabbing, will skip auto move")
+				return
+			}
 		} else {
 			log.Error().Msgf("error at finding tab box position, will skip auto move: %s", err.Error())
 			return
@@ -62,7 +71,7 @@ func moveRightClick(x, y int32) {
 		log.Error().Err(err).Msgf("error at getting baram window start position, will skip auto move")
 		return
 	}
-	offsetX, offsetY := 170, 27
+	offsetX, offsetY := 185, 27
 	targetX, targetY := startX+offsetX+int(x), startY+offsetY+int(y)
 
 	robotgo.Move(targetX, targetY)

@@ -2,6 +2,7 @@ package grpc_client
 
 import (
 	opencv_proto "auto_healer/external/proto/opencv-proto"
+	"auto_healer/internal/grpc_client/grpc_cache"
 	"context"
 	"fmt"
 	log "logger"
@@ -51,6 +52,11 @@ func (c *OpenCVClient) Close() error {
 func (c *OpenCVClient) FindTabBox(ctx context.Context, req *opencv_proto.FindTabBoxRequest) (res *opencv_proto.FindTabBoxResponse, err error) {
 	log.Trace().Msgf("calling opencv-server grpc [FindTabBox]...")
 
+	if time.Since(grpc_cache.FindTabBoxCacheData.CachedAt) < grpc_cache.FindTabBoxCacheDuration {
+		log.Trace().Msgf("using cached FindTabBox data from %s ago", time.Since(grpc_cache.FindTabBoxCacheData.CachedAt).String())
+		return &grpc_cache.FindTabBoxCacheData.FindTabBoxResponse, nil
+	}
+
 	if c.openCVServiceClient == nil {
 		return nil, fmt.Errorf("opencv grpc client is not initialized, please call Connect() first")
 	}
@@ -61,6 +67,11 @@ func (c *OpenCVClient) FindTabBox(ctx context.Context, req *opencv_proto.FindTab
 
 func (c *OpenCVClient) GetHpMpPercent(ctx context.Context, req *opencv_proto.GetHpMpPercentRequest) (res *opencv_proto.GetHpMpPercentResponse, err error) {
 	log.Trace().Msgf("calling opencv-server grpc [GetHpMpPercent]...")
+
+	if time.Since(grpc_cache.GetHpMpPercentCacheData.CachedAt) < grpc_cache.GetHpMpPercentCacheDuration {
+		log.Trace().Msgf("using cached GetHpMpPercent data from %s ago", time.Since(grpc_cache.GetHpMpPercentCacheData.CachedAt).String())
+		return &grpc_cache.GetHpMpPercentCacheData.GetHpMpPercentResponse, nil
+	}
 
 	if c.openCVServiceClient == nil {
 		return nil, fmt.Errorf("opencv grpc client is not initialized, please call Connect() first")

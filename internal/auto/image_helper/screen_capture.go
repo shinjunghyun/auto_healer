@@ -6,11 +6,25 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"time"
 
 	"github.com/kbinani/screenshot"
 )
 
+const (
+	screenCaptureCacheDuration = 500 * time.Millisecond
+)
+
+var (
+	cachedImage  image.Image
+	lastCachedAt time.Time
+)
+
 func CaptureBaramScreen() (image.Image, error) {
+	if cachedImage != nil && time.Since(lastCachedAt) < screenCaptureCacheDuration {
+		return cachedImage, nil
+	}
+
 	windowName := configs.BARAM_WINDOW_TITLE
 	hwnd, err := window_helper.FindWindow(windowName)
 	if err != nil {
@@ -41,6 +55,9 @@ func CaptureBaramScreen() (image.Image, error) {
 			}
 		}
 	}
+
+	cachedImage = croppedImg
+	lastCachedAt = time.Now()
 
 	return croppedImg, nil
 }

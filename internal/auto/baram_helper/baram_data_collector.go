@@ -61,10 +61,12 @@ func FindTabBoxPosition() (x, y int, err error) {
 
 	x = int(res.GetBox().GetX())
 	y = int(res.GetBox().GetY())
+	width := int(res.GetBox().GetWidth())
+	height := int(res.GetBox().GetHeight())
 
-	log.Trace().Msgf("tab box found at position (%d, %d)", x, y)
+	log.Trace().Msgf("tab box found at position (%d, %d) (%d, %d)", x, y, width, height)
 
-	return x, y, nil
+	return x + width/2, y + height/2, nil
 }
 
 func GetHpMpPercent() (hpPercent, mpPercent float32, err error) {
