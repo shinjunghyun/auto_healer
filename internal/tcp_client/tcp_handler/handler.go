@@ -58,7 +58,17 @@ func Dispatcher(conn net.Conn, data []byte) error {
 
 			// 서버로부터 브로드캐스트 받은 키 입력에 따라 자동 동작 수행
 			switch packet.InputData {
-			case tcp_packet.KEY_F5: // not used for now in client...
+			case tcp_packet.KEY_F2: // F2: 력
+				simulator.SendKeyboardInput(keybd_event.VK_0)
+
+			case tcp_packet.KEY_F3: // 희원
+				simulator.SendKeyboardInput(keybd_event.VK_5)
+
+			case tcp_packet.KEY_F4: // F4: 희원첨
+				simulator.SendKeyboardInput(keybd_event.VK_6)
+
+			case tcp_packet.KEY_F5:
+				// do nothing, will be use at the server to manual move...
 
 			case tcp_packet.KEY_F6: // F6: Auto Move
 				if auto.AutoMoveCtx == nil {
@@ -86,6 +96,11 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					auto.AutoDebufCancel(fmt.Errorf("canceled by user"))
 					auto.AutoDebufCtx = nil
 				}
+
+			case tcp_packet.KEY_F9: // F9: 시회 파혼 해독
+				simulator.SendKeyboardInput(keybd_event.VK_7)
+				simulator.SendKeyboardInput(keybd_event.VK_8)
+				simulator.SendKeyboardInput(keybd_event.VK_9)
 
 			// 방향키: Allow Manual Move
 			case tcp_packet.KEY_UP:
