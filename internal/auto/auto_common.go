@@ -1,6 +1,7 @@
 package auto
 
 import (
+	"context"
 	"sync"
 	"tcp_packet"
 	"time"
@@ -10,6 +11,15 @@ const TabBoxCheckInterval = 1000 * time.Millisecond
 
 var (
 	mtx sync.Mutex
+
+	AutoMoveCtx    context.Context
+	AutoMoveCancel context.CancelCauseFunc
+
+	AutoHealCtx    context.Context
+	AutoHealCancel context.CancelCauseFunc
+
+	AutoDebufCtx    context.Context
+	AutoDebufCancel context.CancelCauseFunc
 
 	ServerBaramInfoData ServerBaramInfo
 	ClientBaramInfoData ClientBaramInfo

@@ -1,6 +1,7 @@
 package hooker
 
 import (
+	"auto_healer/internal/auto"
 	"auto_healer/internal/hooker/input_event_handler"
 	"context"
 	"fmt"
@@ -11,17 +12,6 @@ import (
 	"github.com/moutend/go-hook/pkg/keyboard"
 	"github.com/moutend/go-hook/pkg/types"
 	"github.com/moutend/go-hook/pkg/win32"
-)
-
-var (
-	autoMoveCtx    context.Context
-	autoMoveCancel context.CancelCauseFunc
-
-	autoHealCtx    context.Context
-	autoHealCancel context.CancelCauseFunc
-
-	autoDebufCtx    context.Context
-	autoDebufCancel context.CancelCauseFunc
 )
 
 func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.Context)) error {
@@ -58,32 +48,32 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 
 		// F6: Auto Move
 		case k.VKCode == types.VK_F6 && k.Message == types.WM_KEYDOWN:
-			if autoMoveCtx == nil {
-				autoMoveCtx, autoMoveCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeMove, autoMoveCtx)
+			if auto.AutoMoveCtx == nil {
+				auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
+				go callback(input_event_handler.HandlerTypeMove, auto.AutoMoveCtx)
 			} else {
-				autoMoveCancel(fmt.Errorf("canceled by user"))
-				autoMoveCtx = nil
+				auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
+				auto.AutoMoveCtx = nil
 			}
 
 		// F7: Auto Heal
 		case k.VKCode == types.VK_F7 && k.Message == types.WM_KEYDOWN:
-			if autoHealCtx == nil {
-				autoHealCtx, autoHealCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeHeal, autoHealCtx)
+			if auto.AutoHealCtx == nil {
+				auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
+				go callback(input_event_handler.HandlerTypeHeal, auto.AutoHealCtx)
 			} else {
-				autoHealCancel(fmt.Errorf("canceled by user"))
-				autoHealCtx = nil
+				auto.AutoHealCancel(fmt.Errorf("canceled by user"))
+				auto.AutoHealCtx = nil
 			}
 
 		// F8: Auto Debuf
 		case k.VKCode == types.VK_F8 && k.Message == types.WM_KEYDOWN:
-			if autoDebufCtx == nil {
-				autoDebufCtx, autoDebufCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeDebuf, autoDebufCtx)
+			if auto.AutoDebufCtx == nil {
+				auto.AutoDebufCtx, auto.AutoDebufCancel = context.WithCancelCause(context.Background())
+				go callback(input_event_handler.HandlerTypeDebuf, auto.AutoDebufCtx)
 			} else {
-				autoDebufCancel(fmt.Errorf("canceled by user"))
-				autoDebufCtx = nil
+				auto.AutoDebufCancel(fmt.Errorf("canceled by user"))
+				auto.AutoDebufCtx = nil
 			}
 
 		case k.VKCode == types.VK_LCONTROL && k.Message == types.WM_KEYDOWN:

@@ -2,6 +2,7 @@ package tcp_handler
 
 import (
 	"auto_healer/internal/auto"
+	"context"
 	"fmt"
 	"net"
 	"tcp_packet"
@@ -51,6 +52,34 @@ func Dispatcher(conn net.Conn, data []byte) error {
 	case *tcp_packet.PacketPressed:
 		{
 			log.Trace().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
+			switch packet.InputData {
+			case tcp_packet.KEY_F6:
+				if auto.AutoMoveCtx == nil {
+					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
+					go auto.AutoMove(auto.AutoMoveCtx)
+				} else {
+					auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
+					auto.AutoMoveCtx = nil
+				}
+
+			case tcp_packet.KEY_F7:
+				if auto.AutoHealCtx == nil {
+					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
+					go auto.AutoHeal(auto.AutoHealCtx)
+				} else {
+					auto.AutoHealCancel(fmt.Errorf("canceled by user"))
+					auto.AutoHealCtx = nil
+				}
+
+			case tcp_packet.KEY_F8:
+				if auto.AutoDebufCtx == nil {
+					auto.AutoDebufCtx, auto.AutoDebufCancel = context.WithCancelCause(context.Background())
+					go auto.AutoDebuf(auto.AutoDebufCtx)
+				} else {
+					auto.AutoDebufCancel(fmt.Errorf("canceled by user"))
+					auto.AutoDebufCtx = nil
+				}
+			}
 		}
 
 	case *tcp_packet.PacketBaramInfo:
