@@ -118,7 +118,7 @@ func SelfHeal(hp float32) {
 	time.Sleep(10 * time.Millisecond)
 }
 
-func PartyHeal() {
+func PartyHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
@@ -147,6 +147,13 @@ func PartyHeal() {
 			}
 		}
 	}
+
+	if hp == 0 {
+		// 2
+		simulator.SendKeyboardInput(keybd_event.VK_2)
+		time.Sleep(10 * time.Millisecond)
+	}
+
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
 }
