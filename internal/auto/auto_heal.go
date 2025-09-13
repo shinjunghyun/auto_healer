@@ -78,7 +78,7 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	// 상대 체력 확인
 	if ServerCharacter.HpPercent < ServerMinHpPercent {
 		log.Debug().Msgf("party healing... [%.1f, %.1f]", ServerCharacter.HpPercent, ServerMinHpPercent)
-		PartyHeal()
+		PartyHeal(ServerCharacter.HpPercent)
 		return
 	}
 }
