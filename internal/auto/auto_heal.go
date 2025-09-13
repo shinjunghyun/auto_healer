@@ -83,13 +83,27 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	}
 }
 
-func SelfHeal() {
+func SelfHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	time.Sleep(10 * time.Millisecond)
+
+	if hp == 0 {
+		// 2
+		simulator.SendKeyboardInput(keybd_event.VK_2)
+		time.Sleep(10 * time.Millisecond)
+
+		// home
+		simulator.SendKeyboardInput(keybd_event.VK_HOME)
+		time.Sleep(10 * time.Millisecond)
+
+		// enter
+		simulator.SendKeyboardInput(keybd_event.VK_ENTER)
+		time.Sleep(10 * time.Millisecond)
+	}
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
