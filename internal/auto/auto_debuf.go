@@ -14,6 +14,7 @@ func AutoDebuf(ctx context.Context) {
 		time.Sleep(20 * time.Millisecond)
 		select {
 		case <-ctx.Done():
+			isDebufing = false
 			log.Info().Msgf("auto debuf context is done")
 			return
 
@@ -22,6 +23,7 @@ func AutoDebuf(ctx context.Context) {
 				log.Debug().Msgf("currently self-healing, will skip debuf...")
 				continue
 			}
+			isDebufing = true
 			performDebuf()
 		}
 	}
