@@ -171,9 +171,11 @@ func ChargeMP() {
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	time.Sleep(50 * time.Millisecond)
 
-	// 4
-	simulator.SendKeyboardInput(keybd_event.VK_4)
-	time.Sleep(50 * time.Millisecond)
+	for range 2 {
+		// 4
+		simulator.SendKeyboardInput(keybd_event.VK_4)
+		time.Sleep(50 * time.Millisecond)
+	}
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
@@ -193,5 +195,5 @@ func ChargeMP() {
 
 	// enter
 	simulator.SendKeyboardInput(keybd_event.VK_ENTER)
-	time.Sleep(250 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 }
