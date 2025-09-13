@@ -67,7 +67,7 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	if isSelfHealing || ClientCharacter.HpPercent < ClientMinHpPercent {
 		log.Debug().Msgf("self healing... [%.1f%%, %.1f%%, %.1f%%]", ClientMinHpPercent, ClientCharacter.HpPercent, ClientMaxHpPercent)
 		isSelfHealing = true
-		SelfHeal()
+		SelfHeal(ClientCharacter.HpPercent)
 
 		if ClientCharacter.HpPercent >= ClientMaxHpPercent {
 			isSelfHealing = false

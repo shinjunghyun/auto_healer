@@ -7,6 +7,7 @@ import (
 	"auto_healer/internal/helper"
 	"auto_healer/internal/hooker"
 	"auto_healer/internal/hooker/input_event_handler"
+	"auto_healer/internal/simulator"
 	"auto_healer/internal/tcp_client/tcp_handler"
 	log "logger"
 	"net"
@@ -17,6 +18,7 @@ import (
 	"time"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/micmonay/keybd_event"
 )
 
 var (
@@ -38,6 +40,7 @@ func waitSignal(signals chan os.Signal) {
 func shutdown() {
 	log.Info().Msgf("server is in shutting down...")
 	robotgo.MouseUp("right")
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	os.Exit(0)
 }
 

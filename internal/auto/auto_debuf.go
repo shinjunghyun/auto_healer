@@ -11,7 +11,7 @@ import (
 
 func AutoDebuf(ctx context.Context) {
 	for {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 		select {
 		case <-ctx.Done():
 			log.Info().Msgf("auto debuf context is done")
@@ -33,11 +33,11 @@ func performDebuf() {
 
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// 1
 	simulator.SendKeyboardInput(keybd_event.VK_1)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// up
 	simulator.SendKeyboardInput(keybd_event.VK_UP)
