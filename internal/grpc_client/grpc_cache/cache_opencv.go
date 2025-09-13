@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	FindTabBoxCacheDuration     = 500 * time.Millisecond
+	FindTabBoxCacheDuration     = 300 * time.Millisecond
 	GetHpMpPercentCacheDuration = 500 * time.Millisecond
 )
 
