@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	ClientMinHpPercent = 0.125
+	ClientMinHpPercent = 0.15
 	ClientMaxHpPercent = 0.1875
-	ClientMinMpPercent = 0.05
+	ClientMinMpPercent = 0.08
 
 	ServerMinHpPercent = 1.0
 )
@@ -167,7 +167,31 @@ func ChargeMP() {
 	mtx.Lock()
 	defer mtx.Unlock()
 
+	// esc
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(50 * time.Millisecond)
+
 	// 4
 	simulator.SendKeyboardInput(keybd_event.VK_4)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
+
+	// 3
+	simulator.SendKeyboardInput(keybd_event.VK_3)
+	time.Sleep(10 * time.Millisecond)
+
+	// home
+	simulator.SendKeyboardInput(keybd_event.VK_HOME)
+	time.Sleep(10 * time.Millisecond)
+
+	// enter
+	simulator.SendKeyboardInput(keybd_event.VK_ENTER)
+	time.Sleep(90 * time.Millisecond)
+
+	// 3
+	simulator.SendKeyboardInput(keybd_event.VK_3)
+	time.Sleep(10 * time.Millisecond)
+
+	// enter
+	simulator.SendKeyboardInput(keybd_event.VK_ENTER)
+	time.Sleep(250 * time.Millisecond)
 }
