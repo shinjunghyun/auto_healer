@@ -89,27 +89,15 @@ func Dispatcher(conn net.Conn, data []byte) error {
 
 			// 방향키: Allow Manual Move
 			case tcp_packet.KEY_UP:
-				if !manualMoving {
-					break
-				}
 				simulator.SendKeyboardInput(keybd_event.VK_UP)
 
 			case tcp_packet.KEY_DOWN:
-				if !manualMoving {
-					break
-				}
 				simulator.SendKeyboardInput(keybd_event.VK_DOWN)
 
 			case tcp_packet.KEY_LEFT:
-				if !manualMoving {
-					break
-				}
 				simulator.SendKeyboardInput(keybd_event.VK_LEFT)
 
 			case tcp_packet.KEY_RIGHT:
-				if !manualMoving {
-					break
-				}
 				simulator.SendKeyboardInput(keybd_event.VK_RIGHT)
 			}
 		}
