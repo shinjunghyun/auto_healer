@@ -46,6 +46,24 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 				os.Exit(0)
 			}
 
+		// 로컬에서 입력받은 키에 따라 자동 동작 수행
+		// F5: Auto Move & Auto Heal
+		case k.VKCode == types.VK_F5 && k.Message == types.WM_KEYDOWN:
+			if auto.AutoMoveCtx == nil {
+				auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
+				go callback(input_event_handler.HandlerTypeMove, auto.AutoMoveCtx)
+			} else {
+				auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
+				auto.AutoMoveCtx = nil
+			}
+			if auto.AutoHealCtx == nil {
+				auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
+				go callback(input_event_handler.HandlerTypeHeal, auto.AutoHealCtx)
+			} else {
+				auto.AutoHealCancel(fmt.Errorf("canceled by user"))
+				auto.AutoHealCtx = nil
+			}
+
 		// F6: Auto Move
 		case k.VKCode == types.VK_F6 && k.Message == types.WM_KEYDOWN:
 			if auto.AutoMoveCtx == nil {

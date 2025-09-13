@@ -2,6 +2,7 @@ package tcp_handler
 
 import (
 	"auto_healer/internal/auto"
+	"auto_healer/internal/simulator"
 	"context"
 	"fmt"
 	"net"
@@ -9,10 +10,15 @@ import (
 	"time"
 
 	log "logger"
+
+	"github.com/micmonay/keybd_event"
 )
 
 var (
 	tcpConn net.Conn
+
+	manualMoveDuration = 5 * time.Second
+	manualMoving       = false
 )
 
 func SetTcpConnection(conn net.Conn) {
@@ -52,8 +58,35 @@ func Dispatcher(conn net.Conn, data []byte) error {
 	case *tcp_packet.PacketPressed:
 		{
 			log.Trace().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
+
+			// 서버로부터 브로드캐스트 받은 키 입력에 따라 자동 동작 수행
 			switch packet.InputData {
-			case tcp_packet.KEY_F6:
+			case tcp_packet.KEY_F5: // F5: Auto Move & Auto Heal & Allow Manual Move for 5 seconds
+				if auto.AutoMoveCtx == nil {
+					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
+					go auto.AutoMove(auto.AutoMoveCtx)
+				} else {
+					auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
+					auto.AutoMoveCtx = nil
+				}
+				if auto.AutoHealCtx == nil {
+					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
+					go auto.AutoHeal(auto.AutoHealCtx)
+				} else {
+					auto.AutoHealCancel(fmt.Errorf("canceled by user"))
+					auto.AutoHealCtx = nil
+				}
+				if !manualMoving {
+					manualMoving = true
+					go func() {
+						time.Sleep(manualMoveDuration)
+						manualMoving = false
+					}()
+				} else {
+					manualMoving = false
+				}
+
+			case tcp_packet.KEY_F6: // F6: Auto Move
 				if auto.AutoMoveCtx == nil {
 					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
 					go auto.AutoMove(auto.AutoMoveCtx)
@@ -62,7 +95,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					auto.AutoMoveCtx = nil
 				}
 
-			case tcp_packet.KEY_F7:
+			case tcp_packet.KEY_F7: // F7: Auto Heal
 				if auto.AutoHealCtx == nil {
 					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
 					go auto.AutoHeal(auto.AutoHealCtx)
@@ -71,7 +104,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					auto.AutoHealCtx = nil
 				}
 
-			case tcp_packet.KEY_F8:
+			case tcp_packet.KEY_F8: // F8: Auto Debuf
 				if auto.AutoDebufCtx == nil {
 					auto.AutoDebufCtx, auto.AutoDebufCancel = context.WithCancelCause(context.Background())
 					go auto.AutoDebuf(auto.AutoDebufCtx)
@@ -79,6 +112,31 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					auto.AutoDebufCancel(fmt.Errorf("canceled by user"))
 					auto.AutoDebufCtx = nil
 				}
+
+			// 방향키: Allow Manual Move
+			case tcp_packet.KEY_UP:
+				if !manualMoving {
+					break
+				}
+				simulator.SendKeyboardInput(keybd_event.VK_UP)
+
+			case tcp_packet.KEY_DOWN:
+				if !manualMoving {
+					break
+				}
+				simulator.SendKeyboardInput(keybd_event.VK_DOWN)
+
+			case tcp_packet.KEY_LEFT:
+				if !manualMoving {
+					break
+				}
+				simulator.SendKeyboardInput(keybd_event.VK_LEFT)
+
+			case tcp_packet.KEY_RIGHT:
+				if !manualMoving {
+					break
+				}
+				simulator.SendKeyboardInput(keybd_event.VK_RIGHT)
 			}
 		}
 
