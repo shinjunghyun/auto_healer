@@ -21,6 +21,7 @@ const (
 
 var (
 	isSelfHealing = false
+	isDebufing    = false
 )
 
 func AutoHeal(ctx context.Context) {
@@ -47,6 +48,10 @@ func AutoHeal(ctx context.Context) {
 					ClientBaramInfoData.LastUpdatedAt = time.Now()
 				}
 
+				if !isSelfHealing && isDebufing {
+					log.Debug().Msgf("currently debufing, will skip auto heal...")
+					continue
+				}
 				performAutoHeal(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)
 			}
 		}
