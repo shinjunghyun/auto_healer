@@ -16,9 +16,6 @@ import (
 
 var (
 	tcpConn net.Conn
-
-	manualMoveDuration = 5 * time.Second
-	manualMoving       = false
 )
 
 func SetTcpConnection(conn net.Conn) {
@@ -61,30 +58,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 
 			// 서버로부터 브로드캐스트 받은 키 입력에 따라 자동 동작 수행
 			switch packet.InputData {
-			case tcp_packet.KEY_F5: // F5: Auto Move & Auto Heal & Allow Manual Move for 5 seconds
-				if auto.AutoMoveCtx == nil {
-					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
-					go auto.AutoMove(auto.AutoMoveCtx)
-				} else {
-					auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
-					auto.AutoMoveCtx = nil
-				}
-				if auto.AutoHealCtx == nil {
-					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
-					go auto.AutoHeal(auto.AutoHealCtx)
-				} else {
-					auto.AutoHealCancel(fmt.Errorf("canceled by user"))
-					auto.AutoHealCtx = nil
-				}
-				if !manualMoving {
-					manualMoving = true
-					go func() {
-						time.Sleep(manualMoveDuration)
-						manualMoving = false
-					}()
-				} else {
-					manualMoving = false
-				}
+			case tcp_packet.KEY_F5: // not used for now in client...
 
 			case tcp_packet.KEY_F6: // F6: Auto Move
 				if auto.AutoMoveCtx == nil {
