@@ -32,7 +32,7 @@ func GetServicePackageName() string {
 }
 
 func ShowServicelogoPrint() {
-	serviceLogo := strings.ToUpper("hooker-client")
+	serviceLogo := strings.ToUpper(strings.ReplaceAll(configs.SERVICE_NAME, "_", "-"))
 	myFigure := figure.NewColorFigure(serviceLogo, "doom", "cyan", true)
 	myFigure.Print()
 }
