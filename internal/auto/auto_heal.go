@@ -16,11 +16,17 @@ const (
 	ClientMinMpPercent                     = 0.25
 
 	ServerMinHpPercent = 1.0
+
+	backHoCooldown     = 3 * time.Second
+	backHoChumCooldown = 3 * time.Second
 )
 
 var (
 	isSelfHealing = false
 	isDebuffing   = false
+
+	baekHoUsedAt     = time.Time{}
+	baekHoChumUsedAt = time.Time{}
 )
 
 func AutoHeal(ctx context.Context) {
@@ -160,6 +166,14 @@ func PartyHeal(hp float32) {
 
 	// 3
 	simulator.SendKeyboardInput(keybd_event.VK_3)
+
+	if hp < 0.5 && time.Since(baekHoUsedAt) > backHoCooldown { // 백호의희원 사용
+		simulator.SendKeyboardInput(keybd_event.VK_5)
+		baekHoUsedAt = time.Now()
+	} else if hp < 0.5 && time.Since(baekHoChumUsedAt) > backHoChumCooldown { // 백호의희원'첨 사용
+		simulator.SendKeyboardInput(keybd_event.VK_6)
+		baekHoChumUsedAt = time.Now()
+	}
 }
 
 func ChargeMP() {
