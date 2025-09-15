@@ -9,27 +9,27 @@ import (
 	"github.com/micmonay/keybd_event"
 )
 
-func AutoDebuf(ctx context.Context) {
+func AutoDebuff(ctx context.Context) {
 	for {
 		time.Sleep(20 * time.Millisecond)
 		select {
 		case <-ctx.Done():
-			isDebufing = false
-			log.Info().Msgf("auto debuf context is done")
+			isDebuffing = false
+			log.Info().Msgf("auto debuff context is done")
 			return
 
 		default:
 			if isSelfHealing {
-				log.Debug().Msgf("currently self-healing, will skip debuf...")
+				log.Debug().Msgf("currently self-healing, will skip debuff...")
 				continue
 			}
-			isDebufing = true
-			performDebuf()
+			isDebuffing = true
+			performDebuff()
 		}
 	}
 }
 
-func performDebuf() {
+func performDebuff() {
 	mtx.Lock()
 	defer mtx.Unlock()
 

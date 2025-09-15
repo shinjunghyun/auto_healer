@@ -24,8 +24,8 @@ func AutoMove(ctx context.Context) {
 				log.Debug().Msgf("currently self-healing, will skip moving...")
 				continue
 			}
-			if isDebufing {
-				log.Debug().Msgf("currently debufing, will skip moving...")
+			if isDebuffing {
+				log.Debug().Msgf("currently debuffing, will skip moving...")
 				continue
 			}
 			performAutoMove()

@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"auto_healer/configs"
+	"auto_healer/internal/auto"
 	"auto_healer/internal/auto/window_helper"
 	"auto_healer/internal/config"
 	"auto_healer/internal/helper"
 	"auto_healer/internal/hooker"
-	"auto_healer/internal/hooker/input_event_handler"
 	"auto_healer/internal/simulator"
 	"auto_healer/internal/tcp_client/tcp_handler"
+	"fmt"
 	log "logger"
 	"net"
 	"os"
@@ -56,7 +57,7 @@ func AutoHealerStart(gitCommit, buildTime string) {
 	helper.ShowServicelogoPrint()
 
 	go startTCPClient()
-	go hooker.StartKeyboardHooker(input_event_handler.HandleInputEvent)
+	go hooker.StartKeyboardHooker()
 
 	// FIXME: TEST CODE!!!!
 	// testCode()
@@ -111,7 +112,10 @@ func handleConnection(conn net.Conn) {
 	for {
 		n, err := conn.Read(buffer)
 		if n == 0 {
-			log.Info().Msgf("client [%s] has been disconnected", conn.RemoteAddr().String())
+			log.Info().Msgf("server [%s] has been disconnected", conn.RemoteAddr().String())
+			auto.AutoMoveCancel(fmt.Errorf("canceled by server disconnection"))
+			auto.AutoHealCancel(fmt.Errorf("canceled by server disconnection"))
+			auto.AutoDebuffCancel(fmt.Errorf("canceled by server disconnection"))
 			return
 		} else if err != nil {
 			log.Error().Msgf("connection [%s] error: %s", conn.RemoteAddr().String(), err.Error())

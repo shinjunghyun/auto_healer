@@ -18,8 +18,8 @@ var (
 	AutoHealCtx    context.Context
 	AutoHealCancel context.CancelCauseFunc
 
-	AutoDebufCtx    context.Context
-	AutoDebufCancel context.CancelCauseFunc
+	AutoDebuffCtx    context.Context
+	AutoDebuffCancel context.CancelCauseFunc
 
 	ServerBaramInfoData ServerBaramInfo
 	ClientBaramInfoData ClientBaramInfo

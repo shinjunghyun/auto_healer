@@ -12,16 +12,15 @@ import (
 )
 
 const (
-	ClientMinHpPercent = 0.15
-	ClientMaxHpPercent = 0.1875
-	ClientMinMpPercent = 0.08
+	ClientMinHpPercent, ClientMaxHpPercent = 0.15, 0.1875
+	ClientMinMpPercent                     = 0.12
 
 	ServerMinHpPercent = 1.0
 )
 
 var (
 	isSelfHealing = false
-	isDebufing    = false
+	isDebuffing   = false
 )
 
 func AutoHeal(ctx context.Context) {
@@ -48,8 +47,8 @@ func AutoHeal(ctx context.Context) {
 					ClientBaramInfoData.LastUpdatedAt = time.Now()
 				}
 
-				if !isSelfHealing && isDebufing {
-					log.Debug().Msgf("currently debufing, will skip auto heal...")
+				if !isSelfHealing && isDebuffing {
+					log.Debug().Msgf("currently debuffing, will skip auto heal...")
 					continue
 				}
 				performAutoHeal(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)

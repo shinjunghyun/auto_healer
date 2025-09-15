@@ -1,10 +1,6 @@
 package hooker
 
 import (
-	"auto_healer/internal/auto"
-	"auto_healer/internal/hooker/input_event_handler"
-	"context"
-	"fmt"
 	log "logger"
 	"os"
 	"unsafe"
@@ -14,7 +10,7 @@ import (
 	"github.com/moutend/go-hook/pkg/win32"
 )
 
-func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.Context)) error {
+func StartKeyboardHooker() error {
 	log.Info().Msgf("start keyboard hooking...")
 
 	keyChan := make(chan types.KeyboardEvent, 1)
@@ -46,54 +42,6 @@ func StartKeyboardHooker(callback func(input_event_handler.HandlerType, context.
 				os.Exit(0)
 			}
 
-		// 로컬에서 입력받은 키에 따라 자동 동작 수행
-		// F5: Auto Move & Auto Heal
-		case k.VKCode == types.VK_F5 && k.Message == types.WM_KEYDOWN:
-			if auto.AutoMoveCtx == nil {
-				auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeMove, auto.AutoMoveCtx)
-			} else {
-				auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
-				auto.AutoMoveCtx = nil
-			}
-			if auto.AutoHealCtx == nil {
-				auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeHeal, auto.AutoHealCtx)
-			} else {
-				auto.AutoHealCancel(fmt.Errorf("canceled by user"))
-				auto.AutoHealCtx = nil
-			}
-
-		// F6: Auto Move
-		case k.VKCode == types.VK_F6 && k.Message == types.WM_KEYDOWN:
-			if auto.AutoMoveCtx == nil {
-				auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeMove, auto.AutoMoveCtx)
-			} else {
-				auto.AutoMoveCancel(fmt.Errorf("canceled by user"))
-				auto.AutoMoveCtx = nil
-			}
-
-		// F7: Auto Heal
-		case k.VKCode == types.VK_F7 && k.Message == types.WM_KEYDOWN:
-			if auto.AutoHealCtx == nil {
-				auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeHeal, auto.AutoHealCtx)
-			} else {
-				auto.AutoHealCancel(fmt.Errorf("canceled by user"))
-				auto.AutoHealCtx = nil
-			}
-
-		// F8: Auto Debuf
-		case k.VKCode == types.VK_F8 && k.Message == types.WM_KEYDOWN:
-			if auto.AutoDebufCtx == nil {
-				auto.AutoDebufCtx, auto.AutoDebufCancel = context.WithCancelCause(context.Background())
-				go callback(input_event_handler.HandlerTypeDebuf, auto.AutoDebufCtx)
-			} else {
-				auto.AutoDebufCancel(fmt.Errorf("canceled by user"))
-				auto.AutoDebufCtx = nil
-			}
-
 		case k.VKCode == types.VK_LCONTROL && k.Message == types.WM_KEYDOWN:
 			ctrlState = true
 			switch {
@@ -117,9 +65,7 @@ func ignoreKeyboardHookHandler(c chan<- types.KeyboardEvent) types.HOOKPROC {
 			}
 
 			switch (*types.KBDLLHOOKSTRUCT)(unsafe.Pointer(lParam)).VKCode {
-			case types.VK_F6,
-				types.VK_F7,
-				types.VK_F8:
+			case types.VK_LCONTROL:
 				return 1
 
 			default:
