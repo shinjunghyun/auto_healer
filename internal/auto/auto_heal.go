@@ -17,8 +17,8 @@ const (
 
 	ServerMinHpPercent = 1.0
 
-	backHoCooldown     = 3 * time.Second
-	backHoChumCooldown = 3 * time.Second
+	backHoCooldown     = 3000 * time.Millisecond
+	backHoChumCooldown = 3500 * time.Millisecond
 )
 
 var (
