@@ -65,7 +65,7 @@ func ignoreKeyboardHookHandler(c chan<- types.KeyboardEvent) types.HOOKPROC {
 			}
 
 			switch (*types.KBDLLHOOKSTRUCT)(unsafe.Pointer(lParam)).VKCode {
-			case types.VK_LCONTROL:
+			case types.VK_Q:
 				return 1
 
 			default:

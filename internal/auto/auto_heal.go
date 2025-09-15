@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	ClientMinHpPercent, ClientMaxHpPercent = 0.15, 0.1875
-	ClientMinMpPercent                     = 0.12
+	ClientMinHpPercent, ClientMaxHpPercent = 0.15, 0.2
+	ClientMinMpPercent                     = 0.25
 
 	ServerMinHpPercent = 1.0
 )

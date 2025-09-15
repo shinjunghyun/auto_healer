@@ -113,9 +113,15 @@ func handleConnection(conn net.Conn) {
 		n, err := conn.Read(buffer)
 		if n == 0 {
 			log.Info().Msgf("server [%s] has been disconnected", conn.RemoteAddr().String())
-			auto.AutoMoveCancel(fmt.Errorf("canceled by server disconnection"))
-			auto.AutoHealCancel(fmt.Errorf("canceled by server disconnection"))
-			auto.AutoDebuffCancel(fmt.Errorf("canceled by server disconnection"))
+			if auto.AutoMoveCancel != nil {
+				auto.AutoMoveCancel(fmt.Errorf("canceled by server disconnection"))
+			}
+			if auto.AutoHealCancel != nil {
+				auto.AutoHealCancel(fmt.Errorf("canceled by server disconnection"))
+			}
+			if auto.AutoDebuffCancel != nil {
+				auto.AutoDebuffCancel(fmt.Errorf("canceled by server disconnection"))
+			}
 			return
 		} else if err != nil {
 			log.Error().Msgf("connection [%s] error: %s", conn.RemoteAddr().String(), err.Error())

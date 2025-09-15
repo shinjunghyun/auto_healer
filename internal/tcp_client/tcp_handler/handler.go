@@ -71,26 +71,32 @@ func Dispatcher(conn net.Conn, data []byte) error {
 				// do nothing, will be use at the server to manual move...
 
 			case tcp_packet.KEY_F6: // F6: Auto Move
-				auto.AutoMoveCancel(fmt.Errorf("canceled by server"))
+				if auto.AutoMoveCancel != nil {
+					go auto.AutoMoveCancel(fmt.Errorf("canceled by server"))
+				}
 				auto.AutoMoveCtx = nil
-				if packet.Ctx != nil { // 시작 요청
-					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(packet.Ctx)
+				if _, ok := packet.ExtraData["start"]; ok { // 시작 요청
+					auto.AutoMoveCtx, auto.AutoMoveCancel = context.WithCancelCause(context.Background())
 					go auto.AutoMove(auto.AutoMoveCtx)
 				}
 
 			case tcp_packet.KEY_F7: // F7: Auto Heal
-				auto.AutoHealCancel(fmt.Errorf("canceled by server"))
+				if auto.AutoHealCancel != nil {
+					go auto.AutoHealCancel(fmt.Errorf("canceled by server"))
+				}
 				auto.AutoHealCtx = nil
-				if packet.Ctx != nil { // 시작 요청
-					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(packet.Ctx)
-					go auto.AutoMove(auto.AutoHealCtx)
+				if _, ok := packet.ExtraData["start"]; ok { // 시작 요청
+					auto.AutoHealCtx, auto.AutoHealCancel = context.WithCancelCause(context.Background())
+					go auto.AutoHeal(auto.AutoHealCtx)
 				}
 
 			case tcp_packet.KEY_F8: // F8: Auto Debuff
-				auto.AutoDebuffCancel(fmt.Errorf("canceled by server"))
+				if auto.AutoDebuffCancel != nil {
+					go auto.AutoDebuffCancel(fmt.Errorf("canceled by server"))
+				}
 				auto.AutoDebuffCtx = nil
-				if packet.Ctx != nil { // 시작 요청
-					auto.AutoDebuffCtx, auto.AutoDebuffCancel = context.WithCancelCause(packet.Ctx)
+				if _, ok := packet.ExtraData["start"]; ok { // 시작 요청
+					auto.AutoDebuffCtx, auto.AutoDebuffCancel = context.WithCancelCause(context.Background())
 					go auto.AutoDebuff(auto.AutoDebuffCtx)
 				}
 
