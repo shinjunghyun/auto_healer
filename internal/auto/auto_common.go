@@ -25,6 +25,8 @@ var (
 	ClientBaramInfoData ClientBaramInfo
 
 	lastTabBoxCheckAt time.Time
+
+	ServerConfigInstance ConfigExternal
 )
 
 type ServerBaramInfo struct {

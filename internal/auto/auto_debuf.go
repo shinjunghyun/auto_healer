@@ -33,12 +33,14 @@ func performDebuff() {
 	mtx.Lock()
 	defer mtx.Unlock()
 
+	hotkeys := ServerConfigInstance.CastingHotkeys
+
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	time.Sleep(10 * time.Millisecond)
 
 	// 1
-	simulator.SendKeyboardInput(keybd_event.VK_1)
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.HonMa])
 	time.Sleep(10 * time.Millisecond)
 
 	// up

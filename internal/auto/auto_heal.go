@@ -11,16 +11,6 @@ import (
 	"github.com/micmonay/keybd_event"
 )
 
-const (
-	ClientMinHpPercent, ClientMaxHpPercent = 0.15, 0.2
-	ClientMinMpPercent                     = 0.25
-
-	ServerMinHpPercent = 1.0
-
-	backHoCooldown     = 3000 * time.Millisecond
-	backHoChumCooldown = 3500 * time.Millisecond
-)
-
 var (
 	isSelfHealing = false
 	isDebuffing   = false
@@ -67,27 +57,27 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	log.Debug().Msgf("auto-heal: server [%.f%%/%1.f%%] client [%.f%%/%.f%%]", ServerCharacter.HpPercent*100, ServerCharacter.MpPercent*100, ClientCharacter.HpPercent*100, ClientCharacter.MpPercent*100)
 
 	// 마나 충전 확인
-	if ClientCharacter.MpPercent < ClientMinMpPercent {
-		log.Debug().Msgf("charging mana... [%.3f%%, %.3f%%]", ClientCharacter.MpPercent*100, ClientMinMpPercent*100)
+	if ClientCharacter.MpPercent < ServerConfigInstance.HpMpControl.ClientMinMpPercent {
+		log.Debug().Msgf("charging mana... [%.3f%%, %.3f%%]", ClientCharacter.MpPercent*100, ServerConfigInstance.HpMpControl.ClientMinMpPercent*100)
 		ChargeMP()
 		return
 	}
 
 	// 자기 체력 확인
-	if isSelfHealing || ClientCharacter.HpPercent < ClientMinHpPercent {
-		log.Debug().Msgf("self healing... [%.3f%%, %.3f%%, %.3f%%]", ClientMinHpPercent*100, ClientCharacter.HpPercent*100, ClientMaxHpPercent*100)
+	if isSelfHealing || ClientCharacter.HpPercent < ServerConfigInstance.HpMpControl.ClientMinHpPercent {
+		log.Debug().Msgf("self healing... [%.3f%%, %.3f%%, %.3f%%]", ServerConfigInstance.HpMpControl.ClientMinHpPercent*100, ClientCharacter.HpPercent*100, ServerConfigInstance.HpMpControl.ClientMaxHpPercent*100)
 		isSelfHealing = true
 		SelfHeal(ClientCharacter.HpPercent)
 
-		if ClientCharacter.HpPercent >= ClientMaxHpPercent {
+		if ClientCharacter.HpPercent >= ServerConfigInstance.HpMpControl.ClientMaxHpPercent {
 			isSelfHealing = false
 		}
 		return
 	}
 
 	// 상대 체력 확인
-	if ServerCharacter.HpPercent < ServerMinHpPercent {
-		log.Debug().Msgf("party healing... [%.3f%%, %.3f%%]", ServerCharacter.HpPercent*100, ServerMinHpPercent*100)
+	if ServerCharacter.HpPercent < ServerConfigInstance.HpMpControl.ServerMinHpPercent {
+		log.Debug().Msgf("party healing... [%.3f%%, %.3f%%]", ServerCharacter.HpPercent*100, ServerConfigInstance.HpMpControl.ServerMinHpPercent*100)
 		PartyHeal(ServerCharacter.HpPercent)
 		return
 	}
@@ -97,13 +87,15 @@ func SelfHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
+	hotkeys := ServerConfigInstance.CastingHotkeys
+
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	time.Sleep(10 * time.Millisecond)
 
 	if hp == 0 {
 		// 2
-		simulator.SendKeyboardInput(keybd_event.VK_2)
+		simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BooHwal])
 		time.Sleep(10 * time.Millisecond)
 
 		// home
@@ -116,7 +108,7 @@ func SelfHeal(hp float32) {
 	}
 
 	// 3
-	simulator.SendKeyboardInput(keybd_event.VK_3)
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.KiWon])
 	time.Sleep(10 * time.Millisecond)
 
 	// home
@@ -131,6 +123,8 @@ func SelfHeal(hp float32) {
 func PartyHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	hotkeys := ServerConfigInstance.CastingHotkeys
 
 	// tab box 확인
 	if time.Since(lastTabBoxCheckAt) < TabBoxCheckInterval {
@@ -160,18 +154,18 @@ func PartyHeal(hp float32) {
 
 	if hp == 0 {
 		// 2
-		simulator.SendKeyboardInput(keybd_event.VK_2)
+		simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BooHwal])
 		time.Sleep(10 * time.Millisecond)
 	}
 
 	// 3
-	simulator.SendKeyboardInput(keybd_event.VK_3)
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.KiWon])
 
-	if hp < 0.5 && time.Since(baekHoUsedAt) > backHoCooldown { // 백호의희원 사용
-		simulator.SendKeyboardInput(keybd_event.VK_5)
+	if hp < 0.5 && time.Since(baekHoUsedAt) > time.Duration(ServerConfigInstance.CastingConfig.BaekHoCooldownMilliseconds)*time.Millisecond { // 백호의희원 사용
+		simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHo])
 		baekHoUsedAt = time.Now()
-	} else if hp < 0.5 && time.Since(baekHoChumUsedAt) > backHoChumCooldown { // 백호의희원'첨 사용
-		simulator.SendKeyboardInput(keybd_event.VK_6)
+	} else if hp < 0.5 && time.Since(baekHoChumUsedAt) > time.Duration(ServerConfigInstance.CastingConfig.BaekHoChumCooldownMilliseconds)*time.Millisecond { // 백호의희원'첨 사용
+		simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHoChum])
 		baekHoChumUsedAt = time.Now()
 	}
 }
@@ -180,18 +174,20 @@ func ChargeMP() {
 	mtx.Lock()
 	defer mtx.Unlock()
 
+	hotkeys := ServerConfigInstance.CastingHotkeys
+
 	// esc
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	time.Sleep(50 * time.Millisecond)
 
 	for range 2 {
 		// 4
-		simulator.SendKeyboardInput(keybd_event.VK_4)
+		simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.GongRyuk])
 		time.Sleep(50 * time.Millisecond)
 	}
 
 	// 3
-	simulator.SendKeyboardInput(keybd_event.VK_3)
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.KiWon])
 	time.Sleep(50 * time.Millisecond)
 
 	// home
@@ -203,7 +199,7 @@ func ChargeMP() {
 	time.Sleep(90 * time.Millisecond)
 
 	// 3
-	simulator.SendKeyboardInput(keybd_event.VK_3)
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.KiWon])
 	time.Sleep(50 * time.Millisecond)
 
 	// enter

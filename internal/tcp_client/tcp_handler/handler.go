@@ -4,6 +4,7 @@ import (
 	"auto_healer/internal/auto"
 	"auto_healer/internal/simulator"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
 	"tcp_packet"
@@ -56,16 +57,18 @@ func Dispatcher(conn net.Conn, data []byte) error {
 		{
 			log.Trace().Msgf("received from [%s] packetType [0x%02X] inputData [0x%02X]", remoteAddr, packet.PacketType, packet.InputData)
 
+			hotkeys := auto.ServerConfigInstance.CastingHotkeys
+
 			// 서버로부터 브로드캐스트 받은 키 입력에 따라 자동 동작 수행
 			switch packet.InputData {
 			case tcp_packet.KEY_F2: // F2: 력
-				simulator.SendKeyboardInput(keybd_event.VK_0)
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.PaRyuk])
 
 			case tcp_packet.KEY_F3: // 희원
-				simulator.SendKeyboardInput(keybd_event.VK_5)
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHo])
 
 			case tcp_packet.KEY_F4: // F4: 희원첨
-				simulator.SendKeyboardInput(keybd_event.VK_6)
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHoChum])
 
 			case tcp_packet.KEY_F5:
 				// do nothing, will be use at the server to manual move...
@@ -100,10 +103,9 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					go auto.AutoDebuff(auto.AutoDebuffCtx)
 				}
 
-			case tcp_packet.KEY_F9: // F9: 시회 파혼 해독
-				simulator.SendKeyboardInput(keybd_event.VK_7)
-				simulator.SendKeyboardInput(keybd_event.VK_8)
-				simulator.SendKeyboardInput(keybd_event.VK_9)
+			case tcp_packet.KEY_F9: // F9: 시회 파혼
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.SiHoi])
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.PaHon])
 
 			// 방향키: Allow Manual Move
 			case tcp_packet.KEY_UP:
@@ -134,6 +136,14 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			auto.ServerBaramInfoData = auto.ServerBaramInfo{
 				PacketBaramInfo: *packet,
 				LastUpdatedAt:   time.Now(),
+			}
+
+			if packet.ExtraData != nil {
+				if jBytes, err := json.Marshal(packet.ExtraData); err != nil {
+					log.Error().Msgf("error at marshaling extra data from [%s]: %s", remoteAddr, err.Error())
+				} else if err := json.Unmarshal(jBytes, &auto.ServerConfigInstance); err != nil {
+					log.Error().Msgf("error at unmarshaling server config from [%s]: %s", remoteAddr, err.Error())
+				}
 			}
 		}
 
