@@ -4,7 +4,6 @@ import (
 	"auto_healer/internal/auto"
 	"auto_healer/internal/simulator"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net"
 	"tcp_packet"
@@ -138,13 +137,28 @@ func Dispatcher(conn net.Conn, data []byte) error {
 				LastUpdatedAt:   time.Now(),
 			}
 
-			if packet.ExtraData != nil {
-				if jBytes, err := json.Marshal(packet.ExtraData); err != nil {
-					log.Error().Msgf("error at marshaling extra data from [%s]: %s", remoteAddr, err.Error())
-				} else if err := json.Unmarshal(jBytes, &auto.ServerConfigInstance); err != nil {
-					log.Error().Msgf("error at unmarshaling server config from [%s]: %s", remoteAddr, err.Error())
-				}
-			}
+			hpMpConfig := packet.ServerConfig.HpMpConfig
+			castingConfig := packet.ServerConfig.Casting
+			hotKeysConfig := packet.ServerConfig.Hotkeys
+
+			auto.ServerConfigInstance.HpMpControl.ClientMinHpPercent = hpMpConfig.ClientMinHpPercent
+			auto.ServerConfigInstance.HpMpControl.ClientMaxHpPercent = hpMpConfig.ClientMaxHpPercent
+			auto.ServerConfigInstance.HpMpControl.ClientMinMpPercent = hpMpConfig.ClientMinMpPercent
+			auto.ServerConfigInstance.HpMpControl.ServerMinHpPercent = hpMpConfig.ServerMinHpPercent
+
+			auto.ServerConfigInstance.CastingConfig.BaekHoCooldownMilliseconds = castingConfig.BaekHoCooldownMilliseconds
+			auto.ServerConfigInstance.CastingConfig.BaekHoChumCooldownMilliseconds = castingConfig.BaekHoChumCooldownMilliseconds
+
+			auto.ServerConfigInstance.CastingHotkeys.HonMa = hotKeysConfig.HonMa
+			auto.ServerConfigInstance.CastingHotkeys.GuiYum = hotKeysConfig.GuiYum
+			auto.ServerConfigInstance.CastingHotkeys.KiWon = hotKeysConfig.KiWon
+			auto.ServerConfigInstance.CastingHotkeys.GongRyuk = hotKeysConfig.GongRyuk
+			auto.ServerConfigInstance.CastingHotkeys.BaekHo = hotKeysConfig.BaekHo
+			auto.ServerConfigInstance.CastingHotkeys.BaekHoChum = hotKeysConfig.BaekHoChum
+			auto.ServerConfigInstance.CastingHotkeys.PaRyuk = hotKeysConfig.PaRyuk
+			auto.ServerConfigInstance.CastingHotkeys.BooHwal = hotKeysConfig.BooHwal
+			auto.ServerConfigInstance.CastingHotkeys.SiHoi = hotKeysConfig.SiHoi
+			auto.ServerConfigInstance.CastingHotkeys.PaHon = hotKeysConfig.PaHon
 		}
 
 	default:
