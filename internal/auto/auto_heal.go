@@ -59,7 +59,7 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	// 마나 충전 확인
 	if ClientCharacter.MpPercent < ServerConfigInstance.HpMpControl.ClientMinMpPercent {
 		log.Debug().Msgf("charging mana... [%.3f%%, %.3f%%]", ClientCharacter.MpPercent*100, ServerConfigInstance.HpMpControl.ClientMinMpPercent*100)
-		ChargeMP()
+		chargeMP()
 		return
 	}
 
@@ -67,7 +67,7 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	if isSelfHealing || ClientCharacter.HpPercent < ServerConfigInstance.HpMpControl.ClientMinHpPercent {
 		log.Debug().Msgf("self healing... [%.3f%%, %.3f%%, %.3f%%]", ServerConfigInstance.HpMpControl.ClientMinHpPercent*100, ClientCharacter.HpPercent*100, ServerConfigInstance.HpMpControl.ClientMaxHpPercent*100)
 		isSelfHealing = true
-		SelfHeal(ClientCharacter.HpPercent)
+		selfHeal(ClientCharacter.HpPercent)
 
 		if ClientCharacter.HpPercent >= ServerConfigInstance.HpMpControl.ClientMaxHpPercent {
 			isSelfHealing = false
@@ -78,12 +78,12 @@ func performAutoHeal(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	// 상대 체력 확인
 	if ServerCharacter.HpPercent < ServerConfigInstance.HpMpControl.ServerMinHpPercent {
 		log.Debug().Msgf("party healing... [%.3f%%, %.3f%%]", ServerCharacter.HpPercent*100, ServerConfigInstance.HpMpControl.ServerMinHpPercent*100)
-		PartyHeal(ServerCharacter.HpPercent)
+		partyHeal(ServerCharacter.HpPercent)
 		return
 	}
 }
 
-func SelfHeal(hp float32) {
+func selfHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
@@ -120,7 +120,7 @@ func SelfHeal(hp float32) {
 	time.Sleep(10 * time.Millisecond)
 }
 
-func PartyHeal(hp float32) {
+func partyHeal(hp float32) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
@@ -170,7 +170,7 @@ func PartyHeal(hp float32) {
 	}
 }
 
-func ChargeMP() {
+func chargeMP() {
 	mtx.Lock()
 	defer mtx.Unlock()
 
