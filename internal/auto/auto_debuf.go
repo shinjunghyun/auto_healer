@@ -10,6 +10,8 @@ import (
 )
 
 func AutoDebuff(ctx context.Context) {
+	time.Sleep(100 * time.Millisecond)
+	performGuiYum()
 	for {
 		time.Sleep(20 * time.Millisecond)
 		select {
@@ -27,6 +29,20 @@ func AutoDebuff(ctx context.Context) {
 			performDebuff()
 		}
 	}
+}
+
+func performGuiYum() {
+	mtx.Lock()
+	defer mtx.Unlock()
+
+	hotkeys := ServerConfigInstance.CastingHotkeys
+
+	// esc
+	simulator.SendKeyboardInput(keybd_event.VK_ESC)
+	time.Sleep(10 * time.Millisecond)
+
+	// 1
+	simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.GuiYum])
 }
 
 func performDebuff() {
