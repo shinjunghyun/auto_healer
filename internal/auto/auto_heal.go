@@ -204,5 +204,5 @@ func chargeMP() {
 
 	// enter
 	simulator.SendKeyboardInput(keybd_event.VK_ENTER)
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 }

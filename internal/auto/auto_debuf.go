@@ -10,7 +10,7 @@ import (
 )
 
 func AutoDebuff(ctx context.Context) {
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	performGuiYum()
 	for {
 		time.Sleep(20 * time.Millisecond)

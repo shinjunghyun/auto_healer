@@ -40,9 +40,6 @@ func AutoMove(ctx context.Context) {
 				if time.Since(ServerBaramInfoData.LastUpdatedAt) > 1*time.Second {
 					log.Error().Msgf("received baram info is too old to use [%s] ago", time.Since(ServerBaramInfoData.LastUpdatedAt).String())
 					continue
-				} else if abs(int32(ClientBaramInfoData.X-ServerBaramInfoData.X)) <= 2 && abs(int32(ClientBaramInfoData.Y-ServerBaramInfoData.Y)) <= 2 {
-					log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
-					continue
 				} else {
 					var err error
 
@@ -61,6 +58,16 @@ func AutoMove(ctx context.Context) {
 }
 
 func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo) {
+	xDistanceGap, yDistanceGap := abs(int32(ClientBaramInfoData.X-ServerBaramInfoData.X)), abs(int32(ClientBaramInfoData.Y-ServerBaramInfoData.Y))
+
+	if xDistanceGap <= 1 && yDistanceGap <= 1 {
+		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
+		return
+	} else if xDistanceGap <= 2 && yDistanceGap <= 2 && randomChance(99) {
+		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
+		return
+	}
+
 	var err error
 
 	// log.Debug().Msgf("auto-move: server (%d, %d) client (%d, %d)", ServerCharacter.X, ServerCharacter.Y, ClientCharacter.X, ClientCharacter.Y)
