@@ -42,7 +42,7 @@ func CaptureBaramScreen() (image.Image, error) {
 	}
 
 	// 바람 화면 영역 좌표
-	x, y := 170, 27
+	x, y := 171, 28
 	width, height := 1024, 768
 
 	bounds := image.Rect(x, y, x+width, y+height)

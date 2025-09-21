@@ -8,7 +8,7 @@ type Rect struct {
 }
 
 var (
-	BARAM_HP_BOX_RECT    = Rect{X: 860, Y: 648, Width: 140, Height: 16}
-	BARAM_MP_BOX_RECT    = Rect{X: 860, Y: 668, Width: 140, Height: 17}
-	BARAM_HP_MP_BOX_RECT = Rect{X: 860, Y: 648, Width: 140, Height: 37}
+	BARAM_HP_BOX_RECT    = Rect{X: 859, Y: 647, Width: 140, Height: 16}
+	BARAM_MP_BOX_RECT    = Rect{X: 859, Y: 667, Width: 140, Height: 17}
+	BARAM_HP_MP_BOX_RECT = Rect{X: 859, Y: 647, Width: 140, Height: 37}
 )
