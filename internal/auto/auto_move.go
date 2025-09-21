@@ -152,8 +152,8 @@ func abs(value int32) int32 {
 }
 
 // 일정 확률로 true를 반환하는 함수
-func randomChance(percent int) bool {
-	return rand.Intn(100) < percent
+func randomChance(percent float32) bool {
+	return rand.Float32()*100 < percent
 }
 
 func moveLeft() {
