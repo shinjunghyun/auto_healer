@@ -13,6 +13,7 @@ import (
 	log "logger"
 	"time"
 
+	"github.com/ahmetb/go-linq"
 	"golang.org/x/image/bmp"
 )
 
@@ -107,4 +108,67 @@ func GetHpMpPercent() (hpPercent, mpPercent float32, err error) {
 
 		return hpPercent, mpPercent, nil
 	}
+}
+
+func GetCoordinates() (x, y int, err error) {
+	img, err := image_helper.CaptureBaramScreen()
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to capture baram screen: %v", err)
+	}
+
+	// x 좌표 1의자리~100의자리
+	for i := range 3 {
+		pixelPointList := BARAM_COORDINATES_PIXELS[i]
+		foundDigit := -1
+
+		for digit := range 10 { // 0~9까지 숫자 확인
+			log.Trace().Msgf("checking for digit %d at position %d", digit, i)
+			if linq.From(pixelPointList[digit]).AllT(func(p PixelPoint) bool {
+				log.Trace().Msgf("checking pixel at (%d, %d), expected color: %+v, actual color: %+v", p.X, p.Y, BARAM_COORDINATES_COLOR, img.At(p.X, p.Y))
+
+				return img.At(p.X, p.Y) == BARAM_COORDINATES_COLOR
+			}) {
+				foundDigit = digit
+				break
+			}
+		}
+
+		// 자릿수에 맞게 x 값에 더하기 (i=0: 1의자리, i=1: 10의자리, i=2: 100의자리)
+		multiplier := 1
+		for range i {
+			multiplier *= 10
+		}
+		x += foundDigit * multiplier
+	}
+
+	// y 좌표 1의자리~100의자리
+	for i := range 3 {
+		pixelPointList := BARAM_COORDINATES_PIXELS[i]
+		foundDigit := -1
+
+		for digit := range 10 { // 0~9까지 숫자 확인
+			log.Trace().Msgf("checking for digit %d at position %d", digit, i)
+			if linq.From(pixelPointList[digit]).AllT(func(p PixelPoint) bool {
+				log.Trace().Msgf("checking pixel at (%d, %d), expected color: %+v, actual color: %+v", p.X, p.Y, BARAM_COORDINATES_COLOR, img.At(p.X, p.Y))
+
+				return img.At(p.X+BARAM_COORDINATES_DISTANCE, p.Y) == BARAM_COORDINATES_COLOR
+			}) {
+				foundDigit = digit
+				break
+			}
+		}
+
+		// 자릿수에 맞게 y 값에 더하기 (i=0: 1의자리, i=1: 10의자리, i=2: 100의자리)
+		multiplier := 1
+		for range i {
+			multiplier *= 10
+		}
+		y += foundDigit * multiplier
+	}
+
+	if x < 0 || y < 0 {
+		return 0, 0, fmt.Errorf("failed to recognize coordinates, x: %d, y: %d", x, y)
+	}
+
+	return x, y, nil
 }
