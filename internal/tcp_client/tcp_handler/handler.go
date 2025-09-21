@@ -63,11 +63,18 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			case tcp_packet.KEY_F2: // F2: 력
 				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.PaRyuk])
 
-			case tcp_packet.KEY_F3: // 희원
-				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHo])
+			case tcp_packet.KEY_F3: // F3: 귀염
+				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.GuiYum])
 
-			case tcp_packet.KEY_F4: // F4: 희원첨
-				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.BaekHoChum])
+			case tcp_packet.KEY_F4: // F4: Auto Debuff
+				if auto.AutoDebuffCancel != nil {
+					go auto.AutoDebuffCancel(fmt.Errorf("canceled by server"))
+				}
+				auto.AutoDebuffCtx = nil
+				if _, ok := packet.ExtraData["start"]; ok { // 시작 요청
+					auto.AutoDebuffCtx, auto.AutoDebuffCancel = context.WithCancelCause(context.Background())
+					go auto.AutoDebuff(auto.AutoDebuffCtx)
+				}
 
 			case tcp_packet.KEY_F5:
 				// do nothing, will be use at the server to manual move...
@@ -92,15 +99,8 @@ func Dispatcher(conn net.Conn, data []byte) error {
 					go auto.AutoHeal(auto.AutoHealCtx)
 				}
 
-			case tcp_packet.KEY_F8: // F8: Auto Debuff
-				if auto.AutoDebuffCancel != nil {
-					go auto.AutoDebuffCancel(fmt.Errorf("canceled by server"))
-				}
-				auto.AutoDebuffCtx = nil
-				if _, ok := packet.ExtraData["start"]; ok { // 시작 요청
-					auto.AutoDebuffCtx, auto.AutoDebuffCancel = context.WithCancelCause(context.Background())
-					go auto.AutoDebuff(auto.AutoDebuffCtx)
-				}
+			case tcp_packet.KEY_F8: // F8: 보무
+				// TODO: implement BoMu
 
 			case tcp_packet.KEY_F9: // F9: 시회 파혼
 				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.SiHoi])
