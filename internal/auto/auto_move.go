@@ -20,6 +20,7 @@ var (
 )
 
 func AutoMove(ctx context.Context) {
+	lastClientUpdateTime = time.Now()
 	ticker := time.NewTicker(80 * time.Millisecond)
 	for {
 		select {
