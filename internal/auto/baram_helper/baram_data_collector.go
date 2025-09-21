@@ -111,6 +111,13 @@ func GetHpMpPercent() (hpPercent, mpPercent float32, err error) {
 }
 
 func GetCoordinates() (x, y int, err error) {
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		log.Error().Msgf("recovered from panic in GetCoordinates: %v", r)
+	// 		x, y, err = 0, 0, fmt.Errorf("panic occurred: %v", r)
+	// 	}
+	// }()
+
 	img, err := image_helper.CaptureBaramScreen()
 	if err != nil {
 		return 0, 0, fmt.Errorf("failed to capture baram screen: %v", err)
@@ -121,7 +128,7 @@ func GetCoordinates() (x, y int, err error) {
 		pixelPointList := BARAM_COORDINATES_PIXELS[i]
 		foundDigit := -1
 
-		for digit := range 10 { // 0~9까지 숫자 확인
+		for digit := range len(pixelPointList) { // 0~9까지 숫자 확인
 			log.Trace().Msgf("checking for digit %d at position %d", digit, i)
 			if linq.From(pixelPointList[digit]).AllT(func(p PixelPoint) bool {
 				log.Trace().Msgf("checking pixel at (%d, %d), expected color: %+v, actual color: %+v", p.X, p.Y, BARAM_COORDINATES_COLOR, img.At(p.X, p.Y))
@@ -146,7 +153,7 @@ func GetCoordinates() (x, y int, err error) {
 		pixelPointList := BARAM_COORDINATES_PIXELS[i]
 		foundDigit := -1
 
-		for digit := range 10 { // 0~9까지 숫자 확인
+		for digit := range len(pixelPointList) { // 0~9까지 숫자 확인
 			log.Trace().Msgf("checking for digit %d at position %d", digit, i)
 			if linq.From(pixelPointList[digit]).AllT(func(p PixelPoint) bool {
 				log.Trace().Msgf("checking pixel at (%d, %d), expected color: %+v, actual color: %+v", p.X, p.Y, BARAM_COORDINATES_COLOR, img.At(p.X, p.Y))

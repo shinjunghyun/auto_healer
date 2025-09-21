@@ -18,7 +18,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-vgo/robotgo"
 	"github.com/micmonay/keybd_event"
 )
 
@@ -40,7 +39,6 @@ func waitSignal(signals chan os.Signal) {
 
 func shutdown() {
 	log.Info().Msgf("server is in shutting down...")
-	robotgo.MouseUp("right")
 	simulator.SendKeyboardInput(keybd_event.VK_ESC)
 	os.Exit(0)
 }
