@@ -64,23 +64,39 @@ func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	if xDistanceGap <= 1 && yDistanceGap <= 1 {
 		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
 		return
-	} else if xDistanceGap <= 2 && yDistanceGap <= 2 && randomChance(95) {
+	} else if xDistanceGap <= 2 && yDistanceGap <= 2 && randomChance(97.5) {
 		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
 		return
 	}
 
-	var err error
-
 	// log.Debug().Msgf("auto-move: server (%d, %d) client (%d, %d)", ServerCharacter.X, ServerCharacter.Y, ClientCharacter.X, ClientCharacter.Y)
+	moveTowardsTarget(ServerCharacter.X, ServerCharacter.Y, ClientCharacter.X, ClientCharacter.Y)
 
+	// 클라이언트의 좌표 갱신
+	var err error
+	ClientCharacter.X, ClientCharacter.Y, err = baram_helper.GetCoordinates()
+	if err != nil {
+		log.Error().Msgf("error at retrieving current coordinates: %s", err.Error())
+		return
+	}
+
+	// 좌표가 변경된 경우에만 last값 갱신
+	if ClientCharacter.X != int(lastClientCoordX) || ClientCharacter.Y != int(lastClientCoordY) {
+		lastClientCoordX = int32(ClientCharacter.X)
+		lastClientCoordY = int32(ClientCharacter.Y)
+		lastClientUpdateTime = time.Now()
+	}
+}
+
+func moveTowardsTarget(targetX, targetY, currentX, currentY int) {
 	// 거리 계산
-	xDistance := abs(int32(ClientCharacter.X) - int32(ServerCharacter.X))
-	yDistance := abs(int32(ClientCharacter.Y) - int32(ServerCharacter.Y))
+	xDistance := abs(int32(currentX) - int32(targetX))
+	yDistance := abs(int32(currentY) - int32(targetY))
 
 	// 벽 감지: 좌표 변화가 없으면 벽으로 판단 후 랜덤 이동
 	if time.Since(lastClientUpdateTime) > time.Duration(randomMoveMilliseconds)*time.Millisecond &&
-		ClientCharacter.X == int(lastClientCoordX) &&
-		ClientCharacter.Y == int(lastClientCoordY) {
+		currentX == int(lastClientCoordX) &&
+		currentY == int(lastClientCoordY) {
 		log.Warn().Msg("wall detected! performing random move")
 		randomMove()
 		return
@@ -97,32 +113,18 @@ func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	// 움직임 결정
 	if moveXFirst {
 		// X축 이동
-		if ClientCharacter.X > ServerCharacter.X {
+		if currentX > targetX {
 			moveLeft()
-		} else if ClientCharacter.X < ServerCharacter.X {
+		} else if currentX < targetX {
 			moveRight()
 		}
 	} else {
 		// Y축 이동
-		if ClientCharacter.Y > ServerCharacter.Y {
+		if currentY > targetY {
 			moveUp()
-		} else if ClientCharacter.Y < ServerCharacter.Y {
+		} else if currentY < targetY {
 			moveDown()
 		}
-	}
-
-	// 클라이언트의 좌표 갱신
-	ClientCharacter.X, ClientCharacter.Y, err = baram_helper.GetCoordinates()
-	if err != nil {
-		log.Error().Msgf("error at retrieving current coordinates: %s", err.Error())
-		return
-	}
-
-	// 좌표가 변경된 경우에만 last값 갱신
-	if ClientCharacter.X != int(lastClientCoordX) || ClientCharacter.Y != int(lastClientCoordY) {
-		lastClientCoordX = int32(ClientCharacter.X)
-		lastClientCoordY = int32(ClientCharacter.Y)
-		lastClientUpdateTime = time.Now()
 	}
 }
 
