@@ -13,7 +13,6 @@ import (
 
 var (
 	isSelfHealing = false
-	isDebuffing   = false
 
 	baekHoUsedAt     = time.Time{}
 	baekHoChumUsedAt = time.Time{}

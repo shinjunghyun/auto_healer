@@ -23,6 +23,7 @@ type CastingHotkeys struct {
 	BooHwal    string `json:"booHwal"`
 	SiHoi      string `json:"siHoi"`
 	PaHon      string `json:"paHon"`
+	Bun        string `json:"bun"`
 }
 
 type ConfigExternal struct {

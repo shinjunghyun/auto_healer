@@ -64,7 +64,7 @@ func performAutoMove(ServerCharacter, ClientCharacter tcp_packet.PacketBaramInfo
 	if xDistanceGap <= 1 && yDistanceGap <= 1 {
 		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
 		return
-	} else if xDistanceGap <= 2 && yDistanceGap <= 2 && randomChance(99) {
+	} else if xDistanceGap <= 2 && yDistanceGap <= 2 && randomChance(95) {
 		log.Trace().Msgf("client is already near the server position, will skip auto move: server (%d, %d) client (%d, %d)", ServerBaramInfoData.X, ServerBaramInfoData.Y, ClientBaramInfoData.X, ClientBaramInfoData.Y)
 		return
 	}

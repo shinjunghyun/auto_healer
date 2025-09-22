@@ -106,6 +106,9 @@ func Dispatcher(conn net.Conn, data []byte) error {
 				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.SiHoi])
 				simulator.SendKeyboardInput(simulator.StringKeyToKeyCode[hotkeys.PaHon])
 
+			case tcp_packet.KEY_F10: // F10: 력분
+				// do nothing, will be use at the server to ryukbun start/stop...
+
 			// 방향키: Allow Manual Move
 			case tcp_packet.KEY_UP:
 				simulator.SendKeyboardInput(keybd_event.VK_UP)

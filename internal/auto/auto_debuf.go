@@ -9,6 +9,10 @@ import (
 	"github.com/micmonay/keybd_event"
 )
 
+var (
+	isDebuffing = false
+)
+
 func AutoDebuff(ctx context.Context) {
 	for {
 		time.Sleep(20 * time.Millisecond)
