@@ -27,7 +27,7 @@ func GetMapImageHash() (string, error) {
 	pixelData := make([]byte, 0, width*height*4) // Assuming RGBA format
 
 	// Threshold for binarization
-	const threshold = 128
+	const threshold = 2
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {

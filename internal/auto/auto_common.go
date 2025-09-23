@@ -2,6 +2,7 @@ package auto
 
 import (
 	"context"
+	"math/rand"
 	"sync"
 	"tcp_packet"
 	"time"
@@ -10,7 +11,8 @@ import (
 const TabBoxCheckInterval = 1000 * time.Millisecond
 
 var (
-	mtx sync.Mutex
+	mtx     sync.Mutex
+	randObj = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	AutoMoveCtx    context.Context
 	AutoMoveCancel context.CancelCauseFunc

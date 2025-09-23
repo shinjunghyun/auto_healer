@@ -16,8 +16,9 @@ var (
 	lastClientCoordX, lastClientCoordY int32
 	lastClientUpdateTime               time.Time
 
-	randomMoveMilliseconds uint32 = 3000
-	movingMap              bool   = false
+	randomMoveMilliseconds uint32               = 3000
+	movingMap              bool                 = false
+	movingKey              tcp_packet.InputType = 0xFF
 )
 
 func AutoMove(ctx context.Context) {
@@ -67,11 +68,19 @@ func AutoMove(ctx context.Context) {
 					}
 
 					if ClientBaramInfoData.MapData.CurrMapHash == ServerBaramInfoData.MapData.PrevMapHash {
-						log.Info().Msgf("client is on the previous map of the server, will hold key [%d] to change map", ServerBaramInfoData.MapData.HeldKeyOnMapChange)
+						if !movingMap { // 최초 무빙 시작시
+							movingKey = ServerBaramInfoData.MapData.HeldKeyOnMapChange
+						}
+
+						log.Info().Msgf("client is on the previous map of the server, will hold key [%d] to change map", movingKey)
 
 						movingMap = true
 
-						switch ServerBaramInfoData.MapData.HeldKeyOnMapChange {
+						// esc
+						simulator.SendKeyboardInput(keybd_event.VK_ESC)
+						time.Sleep(10 * time.Millisecond)
+
+						switch movingKey {
 						case tcp_packet.KEY_LEFT:
 							moveLeft()
 
@@ -135,7 +144,7 @@ func moveTowardsTarget(targetX, targetY, currentX, currentY int) {
 	yDistance := abs(int32(currentY) - int32(targetY))
 
 	// 벽 감지: 좌표 변화가 없으면 벽으로 판단 후 랜덤 이동
-	if time.Since(lastClientUpdateTime) > time.Duration(randomMoveMilliseconds)*time.Millisecond &&
+	if time.Since(lastClientUpdateTime) > time.Duration(randomMoveMilliseconds+uint32(randObj.Intn(10000)))*time.Millisecond &&
 		currentX == int(lastClientCoordX) &&
 		currentY == int(lastClientCoordY) {
 		log.Warn().Msg("wall detected! performing random move")
@@ -177,12 +186,28 @@ func randomMove() {
 	switch randomDirection {
 	case "left":
 		moveLeft()
+		if randomChance(50) {
+			time.Sleep(500 * time.Millisecond)
+			moveLeft() // 50% 확률로 한 번 더 이동
+		}
 	case "right":
 		moveRight()
+		if randomChance(50) {
+			time.Sleep(500 * time.Millisecond)
+			moveRight() // 50% 확률로 한 번 더 이동
+		}
 	case "up":
 		moveUp()
+		if randomChance(50) {
+			time.Sleep(500 * time.Millisecond)
+			moveUp() // 50% 확률로 한 번 더 이동
+		}
 	case "down":
 		moveDown()
+		if randomChance(50) {
+			time.Sleep(500 * time.Millisecond)
+			moveDown() // 50% 확률로 한 번 더 이동
+		}
 	}
 }
 

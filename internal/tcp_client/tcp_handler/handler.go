@@ -153,6 +153,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			auto.ServerConfigInstance.MapData.PrevMapHash = mapData.PrevMapHash
 			auto.ServerConfigInstance.MapData.CurrMapHash = mapData.CurrMapHash
 			auto.ServerConfigInstance.MapData.HeldKeyOnMapChange = uint8(mapData.HeldKeyOnMapChange)
+			log.Debug().Msgf("held key on map change: %d", auto.ServerConfigInstance.MapData.HeldKeyOnMapChange)
 
 			auto.ServerConfigInstance.CastingConfig.BaekHoCooldownMilliseconds = castingConfig.BaekHoCooldownMilliseconds
 			auto.ServerConfigInstance.CastingConfig.BaekHoChumCooldownMilliseconds = castingConfig.BaekHoChumCooldownMilliseconds
