@@ -7,6 +7,12 @@ type HpMpControl struct {
 	ServerMinHpPercent float32 `json:"serverMinHpPercent"`
 }
 
+type MapInfo struct {
+	PrevMapHash        string `json:"prevMapHash"`
+	CurrMapHash        string `json:"currMapHash"`
+	HeldKeyOnMapChange uint8  `json:"heldKeyOnMapChange"`
+}
+
 type CastingConfig struct {
 	BaekHoCooldownMilliseconds     uint64 `json:"baekHoCooldownMilliseconds"`
 	BaekHoChumCooldownMilliseconds uint64 `json:"baekHoChumCooldownMilliseconds"`
@@ -28,6 +34,7 @@ type CastingHotkeys struct {
 
 type ConfigExternal struct {
 	HpMpControl    HpMpControl    `json:"hpMpControl"`
+	MapData        MapInfo        `json:"mapData"`
 	CastingConfig  CastingConfig  `json:"castingConfig"`
 	CastingHotkeys CastingHotkeys `json:"castingHotkeys"`
 }

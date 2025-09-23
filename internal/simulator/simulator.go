@@ -2,6 +2,7 @@ package simulator
 
 import (
 	log "logger"
+	"time"
 
 	"github.com/micmonay/keybd_event"
 )
@@ -22,4 +23,17 @@ func SendKeyboardInput(key int) (err error) {
 	log.Trace().Msgf("simulating keyCode [0x%02X]...", key)
 	kb.SetKeys(key)
 	return kb.Launching()
+}
+
+func HoldKeyForMilliseconds(key int, durationMilliSeconds int) (err error) {
+	log.Trace().Msgf("simulating keyCode [0x%02X] hold for %d ms...", key, durationMilliSeconds)
+	kb.SetKeys(key)
+	if err = kb.Press(); err != nil {
+		return err
+	}
+	time.Sleep(time.Duration(durationMilliSeconds) * time.Millisecond)
+	if err = kb.Release(); err != nil {
+		return err
+	}
+	return nil
 }

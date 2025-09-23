@@ -141,6 +141,7 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			}
 
 			hpMpConfig := packet.ServerConfig.HpMpConfig
+			mapData := packet.MapData
 			castingConfig := packet.ServerConfig.Casting
 			hotKeysConfig := packet.ServerConfig.Hotkeys
 
@@ -148,6 +149,10 @@ func Dispatcher(conn net.Conn, data []byte) error {
 			auto.ServerConfigInstance.HpMpControl.ClientMaxHpPercent = hpMpConfig.ClientMaxHpPercent
 			auto.ServerConfigInstance.HpMpControl.ClientMinMpPercent = hpMpConfig.ClientMinMpPercent
 			auto.ServerConfigInstance.HpMpControl.ServerMinHpPercent = hpMpConfig.ServerMinHpPercent
+
+			auto.ServerConfigInstance.MapData.PrevMapHash = mapData.PrevMapHash
+			auto.ServerConfigInstance.MapData.CurrMapHash = mapData.CurrMapHash
+			auto.ServerConfigInstance.MapData.HeldKeyOnMapChange = uint8(mapData.HeldKeyOnMapChange)
 
 			auto.ServerConfigInstance.CastingConfig.BaekHoCooldownMilliseconds = castingConfig.BaekHoCooldownMilliseconds
 			auto.ServerConfigInstance.CastingConfig.BaekHoChumCooldownMilliseconds = castingConfig.BaekHoChumCooldownMilliseconds

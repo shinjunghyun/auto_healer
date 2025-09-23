@@ -51,6 +51,26 @@ func AutoMove(ctx context.Context) {
 						continue
 					}
 
+					// 클라이언트 맵정보 갱신
+					currMapHash, err := baram_helper.GetMapImageHash()
+					if err != nil {
+						log.Error().Msgf("error at retrieving current map hash, will skip auto move: %s", err.Error())
+						continue
+					}
+
+					if currMapHash != ClientBaramInfoData.MapData.CurrMapHash {
+						log.Warn().Msgf("map changed! previous: [%s] current: [%s]", ClientBaramInfoData.MapData.CurrMapHash, currMapHash)
+						ClientBaramInfoData.MapData.PrevMapHash = ClientBaramInfoData.MapData.CurrMapHash
+						ClientBaramInfoData.MapData.CurrMapHash = currMapHash
+					}
+
+					if ClientBaramInfoData.MapData.CurrMapHash == ServerBaramInfoData.MapData.PrevMapHash {
+						log.Info().Msgf("client is on the previous map of the server, will hold key [%d] to change map", ServerBaramInfoData.MapData.HeldKeyOnMapChange)
+						simulator.SendKeyboardInput(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange+tcp_packet.KEY_LEFT) + int(keybd_event.VK_LEFT))
+						// simulator.HoldKeyForMilliseconds(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange)+int(keybd_event.VK_LEFT), 1500)
+						continue
+					}
+
 					performAutoMove(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)
 				}
 			}
