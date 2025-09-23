@@ -17,6 +17,7 @@ var (
 	lastClientUpdateTime               time.Time
 
 	randomMoveMilliseconds uint32 = 3000
+	movingMap              bool   = false
 )
 
 func AutoMove(ctx context.Context) {
@@ -67,8 +68,11 @@ func AutoMove(ctx context.Context) {
 					if ClientBaramInfoData.MapData.CurrMapHash == ServerBaramInfoData.MapData.PrevMapHash {
 						log.Info().Msgf("client is on the previous map of the server, will hold key [%d] to change map", ServerBaramInfoData.MapData.HeldKeyOnMapChange)
 						simulator.SendKeyboardInput(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange+tcp_packet.KEY_LEFT) + int(keybd_event.VK_LEFT))
+						movingMap = true
 						// simulator.HoldKeyForMilliseconds(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange)+int(keybd_event.VK_LEFT), 1500)
 						continue
+					} else {
+						movingMap = false
 					}
 
 					performAutoMove(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)

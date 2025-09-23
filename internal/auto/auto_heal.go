@@ -46,6 +46,11 @@ func AutoHeal(ctx context.Context) {
 					log.Debug().Msgf("currently debuffing, will skip auto heal...")
 					continue
 				}
+				if movingMap {
+					log.Debug().Msgf("currently moving map, will skip auto heal...")
+					continue
+				}
+
 				performAutoHeal(ServerBaramInfoData.PacketBaramInfo, ClientBaramInfoData.PacketBaramInfo)
 			}
 		}

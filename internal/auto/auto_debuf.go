@@ -27,6 +27,11 @@ func AutoDebuff(ctx context.Context) {
 				log.Debug().Msgf("currently self-healing, will skip debuff...")
 				continue
 			}
+			if movingMap {
+				log.Debug().Msgf("currently moving map, will skip debuff...")
+				continue
+			}
+
 			isDebuffing = true
 			performDebuff()
 		}
