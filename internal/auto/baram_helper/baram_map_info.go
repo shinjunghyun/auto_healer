@@ -14,8 +14,8 @@ func GetMapImageHash() (string, error) {
 	}
 
 	croppedImg, err := image_helper.CropImage(img, image.Rectangle{
-		Min: image.Point{X: 10, Y: 10},  // TODO: verify these values
-		Max: image.Point{X: 110, Y: 60}, // TODO: verify these values
+		Min: image.Point{X: 272, Y: 0},
+		Max: image.Point{X: 422, Y: 15},
 	})
 	if err != nil {
 		return "", err
@@ -26,14 +26,30 @@ func GetMapImageHash() (string, error) {
 	width, height := bounds.Dx(), bounds.Dy()
 	pixelData := make([]byte, 0, width*height*4) // Assuming RGBA format
 
+	// Threshold for binarization
+	const threshold = 128
+
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			r, g, b, a := croppedImg.At(x, y).RGBA()
-			pixelData = append(pixelData, byte(r>>8), byte(g>>8), byte(b>>8), byte(a>>8))
+			r, g, b, _ := croppedImg.At(x, y).RGBA()
+
+			// Convert to grayscale using the average method
+			gray := (r>>8 + g>>8 + b>>8) / 3
+
+			// Apply threshold for binarization
+			var binarized byte
+			if gray > threshold {
+				binarized = 255 // White
+			} else {
+				binarized = 0 // Black
+			}
+
+			// Append binarized pixel data (RGBA format)
+			pixelData = append(pixelData, binarized, binarized, binarized, 255) // Alpha is fully opaque
 		}
 	}
 
-	// Compute the MD5 hash of the raw pixel data
+	// Compute the MD5 hash of the binarized pixel data
 	hash := md5.Sum(pixelData)
 	hashStr := hex.EncodeToString(hash[:])
 

@@ -58,6 +58,7 @@ func AutoMove(ctx context.Context) {
 						log.Error().Msgf("error at retrieving current map hash, will skip auto move: %s", err.Error())
 						continue
 					}
+					log.Debug().Msgf("current map hash: [%s]", currMapHash)
 
 					if currMapHash != ClientBaramInfoData.MapData.CurrMapHash {
 						log.Warn().Msgf("map changed! previous: [%s] current: [%s]", ClientBaramInfoData.MapData.CurrMapHash, currMapHash)
