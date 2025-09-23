@@ -67,8 +67,24 @@ func AutoMove(ctx context.Context) {
 
 					if ClientBaramInfoData.MapData.CurrMapHash == ServerBaramInfoData.MapData.PrevMapHash {
 						log.Info().Msgf("client is on the previous map of the server, will hold key [%d] to change map", ServerBaramInfoData.MapData.HeldKeyOnMapChange)
-						simulator.SendKeyboardInput(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange+tcp_packet.KEY_LEFT) + int(keybd_event.VK_LEFT))
+
 						movingMap = true
+
+						switch ServerBaramInfoData.MapData.HeldKeyOnMapChange {
+						case tcp_packet.KEY_LEFT:
+							moveLeft()
+
+						case tcp_packet.KEY_UP:
+							moveUp()
+
+						case tcp_packet.KEY_RIGHT:
+							moveRight()
+
+						case tcp_packet.KEY_DOWN:
+							moveDown()
+						}
+
+						// simulator.SendKeyboardInput(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange+tcp_packet.KEY_LEFT) + int(keybd_event.VK_LEFT))
 						// simulator.HoldKeyForMilliseconds(int(ServerBaramInfoData.MapData.HeldKeyOnMapChange)+int(keybd_event.VK_LEFT), 1500)
 						continue
 					} else {
