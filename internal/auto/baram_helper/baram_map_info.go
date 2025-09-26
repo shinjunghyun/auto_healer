@@ -4,7 +4,9 @@ import (
 	"auto_healer/internal/auto/image_helper"
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"image"
+	"image/color"
 	log "logger"
 )
 
@@ -12,6 +14,10 @@ func GetMapImageHash() (string, error) {
 	img, err := image_helper.CaptureBaramScreen()
 	if err != nil {
 		return "", err
+	}
+
+	if mapOk, err := image_helper.IsColorMatch(img, 244, 0, color.RGBA{R: 0x81, G: 0x26, B: 0x08, A: 0xFF}, 10); err != nil || !mapOk {
+		return "", fmt.Errorf("not in map screen")
 	}
 
 	croppedImg, err := image_helper.CropImage(img, image.Rectangle{
